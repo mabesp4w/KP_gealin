@@ -1,0 +1,68 @@
+import * as yup from 'yup';
+
+export const pendudukSchema = yup.object({
+    nik: yup.string().required('NIK wajib diisi').length(16, 'NIK harus 16 digit'),
+    kartu_keluarga_id: yup.number().nullable().transform((v, o) => (o === '' || o === null ? null : v)),
+    nama_lengkap: yup.string().required('Nama lengkap wajib diisi').max(255),
+    tempat_lahir: yup.string().required('Tempat lahir wajib diisi').max(100),
+    tanggal_lahir: yup.string().required('Tanggal lahir wajib diisi'),
+    jenis_kelamin: yup.string().required().oneOf(['L', 'P']),
+    agama: yup.string().required('Agama wajib diisi').max(30),
+    status_perkawinan: yup.string().required('Status perkawinan wajib diisi').max(20),
+    pendidikan_terakhir: yup.string().required('Pendidikan wajib diisi').max(50),
+    pekerjaan: yup.string().required('Pekerjaan wajib diisi').max(100),
+    kewarganegaraan: yup.string().oneOf(['WNI', 'WNA']).default('WNI'),
+    golongan_darah: yup.string().nullable().oneOf(['A', 'B', 'AB', 'O', '', null]).transform((v) => v || null),
+    status_hubungan_keluarga: yup.string().required('Status hubungan wajib diisi').max(30),
+    nama_ayah: yup.string().nullable().max(100).transform((v) => v || null),
+    nama_ibu: yup.string().nullable().max(100).transform((v) => v || null),
+    alamat: yup.string().required('Alamat wajib diisi'),
+    rt: yup.string().required('RT wajib diisi').max(5),
+    rw: yup.string().required('RW wajib diisi').max(5),
+    status_penduduk: yup.string().oneOf(['Tetap', 'Sementara', 'Pindah', 'Meninggal']).default('Tetap'),
+    telepon: yup.string().nullable().max(20).transform((v) => v || null),
+    tanggal_masuk: yup.string().nullable().transform((v) => v || null),
+    catatan: yup.string().nullable().transform((v) => v || null),
+    // Akun Login (opsional - untuk create user otomatis)
+    create_user: yup.boolean().optional().default(false),
+    user_email: yup.string().when('create_user', {
+        is: true,
+        then: (schema) => schema.required('Email wajib diisi jika membuat akun').email('Format email tidak valid').max(255),
+        otherwise: (schema) => schema.optional().nullable().transform((v) => v || null),
+    }),
+    user_password: yup.string().when('create_user', {
+        is: true,
+        then: (schema) => schema.required('Password wajib diisi jika membuat akun').min(6, 'Password minimal 6 karakter'),
+        otherwise: (schema) => schema.optional().nullable().transform((v) => v || null),
+    }),
+});
+
+export type PendudukFormValues = yup.InferType<typeof pendudukSchema>;
+
+export const defaultValues: PendudukFormValues = {
+    nik: '',
+    kartu_keluarga_id: null,
+    nama_lengkap: '',
+    tempat_lahir: '',
+    tanggal_lahir: '',
+    jenis_kelamin: 'L',
+    agama: 'Islam',
+    status_perkawinan: 'Belum Kawin',
+    pendidikan_terakhir: 'SLTA',
+    pekerjaan: '',
+    kewarganegaraan: 'WNI',
+    golongan_darah: null,
+    status_hubungan_keluarga: 'Kepala Keluarga',
+    nama_ayah: null,
+    nama_ibu: null,
+    alamat: '',
+    rt: '',
+    rw: '',
+    status_penduduk: 'Tetap',
+    telepon: null,
+    tanggal_masuk: null,
+    catatan: null,
+    create_user: false,
+    user_email: null,
+    user_password: null,
+};
