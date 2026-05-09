@@ -11,8 +11,8 @@ return new class extends Migration
         Schema::create('persyaratan_surat', function (Blueprint $table) {
             $table->id();
             $table->foreignId('jenis_surat_id')->constrained('jenis_surat')->restrictOnDelete();
-            $table->string('nama'); // e.g., KTP, KK, Foto, Pengantar RT
-            $table->string('tipe_file')->default('image'); // image, pdf, document
+            $table->string('nama'); // Nama persyaratan (e.g., Fotokopi KTP, Surat Pengantar)
+            $table->string('tipe_file', 50)->nullable(); // KTP, KK, Foto, Pengantar RT, dll (untuk kategori file di lampiran)
             $table->boolean('wajib')->default(true);
             $table->integer('urutan')->default(0);
             $table->text('keterangan')->nullable();

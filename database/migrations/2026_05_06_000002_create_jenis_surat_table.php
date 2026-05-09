@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('kode', 20)->unique();       // e.g. SK-DOM, SKTM, SK-PINDAH
             $table->string('nama');                      // e.g. Surat Keterangan Domisili
             $table->text('deskripsi')->nullable();
+            $table->text('persyaratan')->nullable();     // deskripsi persyaratan dokumen
             $table->json('template_fields')->nullable(); // JSON: field-field tambahan per jenis surat
             $table->boolean('is_active')->default(true);
             $table->boolean('bisa_diajukan_warga')->default(true); // Warga bisa ajukan sendiri?

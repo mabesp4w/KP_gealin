@@ -23,5 +23,8 @@ class DatabaseSeeder extends Seeder
 
         // Jenis Surat
         $this->call(JenisSuratSeeder::class);
+
+        // Data Penduduk Kelurahan Ardipura
+        $this->call(PendudukSeeder::class);
     }
 }

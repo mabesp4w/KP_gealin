@@ -16,6 +16,7 @@ class JenisSurat extends Model
         'kode',
         'nama',
         'deskripsi',
+        'persyaratan',
         'template_fields',
         'is_active',
         'bisa_diajukan_warga',
