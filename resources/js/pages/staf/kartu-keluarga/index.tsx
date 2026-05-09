@@ -24,22 +24,7 @@ import {
 } from '@/components/ui';
 import StafLayout from '@/layouts/StafLayout';
 import { kartuKeluargaSchema, defaultValues, type KartuKeluargaFormValues } from './schema';
-
-/** Parse "YYYY-MM-DD" or ISO string to Date, returns null if invalid */
-const parseDate = (v: string | null | undefined): Date | null => {
-    if (!v) return null;
-    const d = new Date(v);
-    return isNaN(d.getTime()) ? null : d;
-};
-
-/** Format Date to "YYYY-MM-DD" string for backend */
-const formatDate = (d: Date | null): string => {
-    if (!d) return '';
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${y}-${m}-${day}`;
-};
+import { formatDate, parseDate, toDateString } from '@/lib/date';
 
 // ── Types ──────────────────────────────────────────────────
 
@@ -375,7 +360,7 @@ export default function KartuKeluargaIndex({ kartuKeluarga, filters }: Props) {
                                         <DatePickerInput
                                             label="Tanggal Dikeluarkan"
                                             selected={parseDate(field.value)}
-                                            onChange={(date) => field.onChange(formatDate(date))}
+                                            onChange={(date) => field.onChange(toDateString(date))}
                                             error={errors.tanggal_dikeluarkan?.message}
                                             placeholder="Pilih tanggal"
                                             isClearable
@@ -482,7 +467,7 @@ export default function KartuKeluargaIndex({ kartuKeluarga, filters }: Props) {
                                 {detailItem.tanggal_dikeluarkan && (
                                     <div>
                                         <span className="text-base-content/50">Tanggal Dikeluarkan</span>
-                                        <p>{new Date(detailItem.tanggal_dikeluarkan).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                                        <p>{formatDate(detailItem.tanggal_dikeluarkan)}</p>
                                     </div>
                                 )}
                             </div>

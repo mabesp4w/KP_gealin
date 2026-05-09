@@ -24,6 +24,7 @@ import {
     Tooltip,
 } from '@/components/ui';
 import StafLayout from '@/layouts/StafLayout';
+import { formatDateShort } from '@/lib/date';
 
 // ── Types ──────────────────────────────────────────────────
 
@@ -396,7 +397,7 @@ export default function PengajuanIndex({ pengajuan, filters, jenisSurat, pendudu
                                                 </Badge>
                                             </TableCell>
                                             <TableCell className="hidden md:table-cell text-xs">
-                                                {new Date(item.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                                {formatDateShort(item.created_at)}
                                             </TableCell>
                                             <TableCell className="text-center">
                                                 <div className="flex justify-center gap-1">

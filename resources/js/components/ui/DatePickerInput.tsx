@@ -1,5 +1,10 @@
 import ReactDatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { registerLocale } from 'react-datepicker';
+import id from 'date-fns/locale/id';
+
+// Register Indonesian locale
+registerLocale('id-ID', id);
 
 interface DatePickerInputProps {
     label?: string;
@@ -119,7 +124,7 @@ function DatePickerInput({
     inputSize,
     className = '',
     placeholder,
-    dateFormat = 'dd/MM/yyyy',
+    dateFormat = 'd MMM yyyy',
     showTimeSelect,
     timeIntervals = 15,
     minDate,
@@ -173,7 +178,7 @@ function DatePickerInput({
                     id={id}
                     showMonthYearPicker={showMonthYearPicker}
                     showYearPicker={showYearPicker}
-                    locale={locale}
+                    locale={locale ?? 'id-ID'}
                     inline={inline}
                     renderCustomHeader={(params) => (
                         <CustomHeader {...params} yearStart={yearStart} yearEnd={yearEnd} />

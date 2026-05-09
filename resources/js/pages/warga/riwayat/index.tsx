@@ -3,6 +3,7 @@ import { PageProps } from '@/types';
 import WargaLayout from '@/layouts/WargaLayout';
 import { Card, CardBody, CardTitle, Badge, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow, Button, Modal, Alert } from '@/components/ui';
 import { useState } from 'react';
+import { formatDateShort, formatDateTime } from '@/lib/date';
 
 interface LampiranItem {
     id: number;
@@ -155,7 +156,7 @@ export default function WargaRiwayat({ pengajuan }: WargaRiwayatProps) {
                                                     )}
                                                 </TableCell>
                                                 <TableCell className="text-sm">
-                                                    {new Date(item.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                                    {formatDateShort(item.created_at)}
                                                 </TableCell>
                                                 <TableCell className="text-right">
                                                     <div className="flex justify-end gap-1">
@@ -256,7 +257,7 @@ export default function WargaRiwayat({ pengajuan }: WargaRiwayatProps) {
                                     {/* Tanggal Pengajuan */}
                                     <div className="flex items-center gap-3 text-sm">
                                         <span className="text-base-content/60">📅 Diajukan</span>
-                                        <span>{new Date(selectedItem.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+                                        <span>{formatDateTime(selectedItem.created_at)}</span>
                                     </div>
 
                                     {/* Tanggal Diproses */}

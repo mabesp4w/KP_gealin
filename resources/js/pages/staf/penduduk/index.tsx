@@ -26,22 +26,7 @@ import {
 } from '@/components/ui';
 import StafLayout from '@/layouts/StafLayout';
 import { pendudukSchema, defaultValues, type PendudukFormValues } from './schema';
-
-/** Parse "YYYY-MM-DD" or ISO string to Date, returns null if invalid */
-const parseDate = (v: string | null | undefined): Date | null => {
-    if (!v) return null;
-    const d = new Date(v);
-    return isNaN(d.getTime()) ? null : d;
-};
-
-/** Format Date to "YYYY-MM-DD" string for backend */
-const formatDate = (d: Date | null): string => {
-    if (!d) return '';
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${y}-${m}-${day}`;
-};
+import { formatDate, parseDate, toDateString } from '@/lib/date';
 
 // ── Types ──────────────────────────────────────────────────
 
@@ -104,7 +89,7 @@ interface Props {
 
 // ── Constants ──────────────────────────────────────────────
 
-const AGAMA_OPTIONS = ['Islam', 'Kristen Protestan', 'Katolik', 'Hindu', 'Buddha', 'Konghucu', 'Kepercayaan'];
+const AGAMA_OPTIONS = ['Kristen Protestan', 'Islam',  'Katolik', 'Hindu', 'Buddha', 'Konghucu', 'Kepercayaan'];
 const STATUS_KAWIN_OPTIONS = ['Belum Kawin', 'Kawin', 'Cerai Hidup', 'Cerai Mati'];
 const PENDIDIKAN_OPTIONS = ['Tidak/Belum Sekolah', 'Belum Tamat SD', 'Tamat SD', 'SLTP', 'SLTA', 'D1/D2', 'D3', 'D4/S1', 'S2', 'S3'];
 const HUBUNGAN_OPTIONS = ['Kepala Keluarga', 'Suami', 'Istri', 'Anak', 'Menantu', 'Cucu', 'Orang Tua', 'Mertua', 'Famili Lain', 'Lainnya'];
@@ -688,7 +673,7 @@ export default function PendudukIndex({ penduduk, filters, kartuKeluarga }: Prop
                                 <div className="grid grid-cols-2 gap-2 text-sm">
                                     <div><span className="text-base-content/60">NIK:</span> <span className="font-mono">{detailItem.nik}</span></div>
                                     <div><span className="text-base-content/60">Nama Lengkap:</span> {detailItem.nama_lengkap}</div>
-                                    <div><span className="text-base-content/60">Tempat/Tgl Lahir:</span> {detailItem.tempat_lahir}, {detailItem.tanggal_lahir}</div>
+                                    <div><span className="text-base-content/60">Tempat/Tgl Lahir:</span> {detailItem.tempat_lahir}, {formatDate(detailItem.tanggal_lahir)}</div>
                                     <div><span className="text-base-content/60">Jenis Kelamin:</span> {detailItem.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan'}</div>
                                     <div><span className="text-base-content/60">Agama:</span> {detailItem.agama}</div>
                                     <div><span className="text-base-content/60">Status Perkawinan:</span> {detailItem.status_perkawinan}</div>
@@ -740,7 +725,7 @@ export default function PendudukIndex({ penduduk, filters, kartuKeluarga }: Prop
                                 <div className="grid grid-cols-2 gap-2 text-sm">
                                     <div><span className="text-base-content/60">Status Penduduk:</span> <Badge color={statusColor(detailItem.status_penduduk)} size="sm">{detailItem.status_penduduk}</Badge></div>
                                     <div><span className="text-base-content/60">Telepon:</span> {detailItem.telepon || '—'}</div>
-                                    <div><span className="text-base-content/60">Tgl Masuk:</span> {detailItem.tanggal_masuk || '—'}</div>
+                                    <div><span className="text-base-content/60">Tgl Masuk:</span> {detailItem.tanggal_masuk ? formatDate(detailItem.tanggal_masuk) : '—'}</div>
                                     <div><span className="text-base-content/60">Akun Login:</span> {detailItem.user_id ? <Badge color="success" size="sm">Aktif</Badge> : <span className="text-base-content/40">Tidak ada</span>}</div>
                                 </div>
                                 {detailItem.catatan && (

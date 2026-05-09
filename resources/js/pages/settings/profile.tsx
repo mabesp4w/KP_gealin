@@ -1,6 +1,7 @@
 import { Head, useForm, usePage } from '@inertiajs/react';
+import { useState } from 'react';
 import { PageProps } from '@/types';
-import { TextInput, Button, showError } from '@/components/ui';
+import { TextInput, Button, showError, Modal, ModalHeader, ModalBody, ModalAction } from '@/components/ui';
 
 interface ProfileProps extends PageProps {
     session?: { status?: string };
@@ -8,6 +9,7 @@ interface ProfileProps extends PageProps {
 
 export default function Profile({ session }: ProfileProps) {
     const user = usePage<ProfileProps>().props.auth?.user;
+    const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
     const { data, setData, patch, processing, errors, delete: destroy } = useForm({
         name: user?.name || '',
@@ -24,11 +26,15 @@ export default function Profile({ session }: ProfileProps) {
     };
 
     const deleteAccount = () => {
-        if (!confirm('Apakah Anda yakin ingin menghapus akun? Tindakan ini tidak dapat dibatalkan.')) {
-            return;
-        }
+        setIsDeleteOpen(true);
+    };
 
-        destroy('/settings/profile');
+    const executeDelete = () => {
+        destroy('/settings/profile', {
+            onSuccess: () => {
+                setIsDeleteOpen(false);
+            },
+        });
     };
 
     return (
@@ -96,6 +102,19 @@ export default function Profile({ session }: ProfileProps) {
                     </div>
                 </div>
             </div>
+
+            {/* Delete Account Modal */}
+            <Modal open={isDeleteOpen} onClose={() => setIsDeleteOpen(false)}>
+                <ModalHeader>Hapus Akun</ModalHeader>
+                <ModalBody>
+                    <p>Apakah Anda yakin ingin menghapus akun?</p>
+                    <p className="text-sm text-error mt-2">Tindakan ini tidak dapat dibatalkan. Semua data dan resource akan dihapus secara permanen dari sistem.</p>
+                </ModalBody>
+                <ModalAction>
+                    <Button color="ghost" onClick={() => setIsDeleteOpen(false)}>Batal</Button>
+                    <Button color="error" onClick={executeDelete}>Ya, Hapus Akun</Button>
+                </ModalAction>
+            </Modal>
         </>
     );
 }

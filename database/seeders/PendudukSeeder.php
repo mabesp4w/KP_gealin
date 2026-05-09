@@ -22,7 +22,7 @@ class PendudukSeeder extends Seeder
         // Nonaktifkan logging untuk performa
         DB::disableQueryLog();
 
-        $agamaList = ['Kristen', 'Islam', 'Katolik', 'Hindu', 'Buddha', 'Konghucu'];
+        $agamaList = ['Islam', 'Kristen', 'Katolik', 'Hindu', 'Buddha', 'Konghucu'];
         $agamaWeights = [44, 50, 6, 0.1, 0.1, 0]; // Sesuai proporsi Kota Jayapura
 
         $pendidikanList = ['SD', 'SLTP', 'SLTA', 'D3', 'S1', 'S2', 'S3', 'Tidak Sekolah'];
@@ -32,7 +32,7 @@ class PendudukSeeder extends Seeder
             'Tenaga Kesehatan', 'Guru', 'Ustadz/Pendeta', 'Lainnya'
         ];
 
-        $statusKawin = ['Belum Kawin', 'Kawin', 'Cerai Hidup', 'Cerai Mati'];
+        $statusPerkawinan = ['Belum Kawin', 'Kawin', 'Cerai Hidup', 'Cerai Mati'];
         $statusHubungan = [
             'Kepala Keluarga', 'Istri', 'Anak', 'Orang Tua', 'Menantu',
             'Cucu', 'Famili Lain', 'Pembantu'
@@ -41,21 +41,23 @@ class PendudukSeeder extends Seeder
         $margaPapua = [
             'Kogoya', 'Wenda', 'Tabuni', 'Wonda', 'Murib', 'Gebze', 'Mahuze',
             'Ndiken', 'Samkakai', 'Kaize', 'Balagaise', 'Youw', 'Aitrem',
-            'Telenggen', 'Gire', 'Kogoya', 'Wakum', 'Degei', 'Auwe', 'Bones'
+            'Telenggen', 'Gire', 'Wakum', 'Degei', 'Auwe', 'Bones'
         ];
 
+        // Nama laki-laki dan perempuan yang lebih variatif
         $namaLaki = [
-            'Yohanes', 'Lukas', 'Matius', 'Markus', 'Yusuf', 'Ignasius',
-            'Septian', 'Ricky', 'Yulius', 'Ferdinand', 'Natan', 'Elia',
-            'Andi', 'Budi', 'Joko', 'Agus', 'Ahmad', 'Rudi', 'Dedi',
-            'Roni', 'Feri', 'Henky', 'Lorenzo', 'Yakobus', 'Melkisedek'
+            'Yohanes', 'Lukas', 'Matius', 'Markus', 'Yusuf', 'Ignasius', 'Septian', 'Ricky',
+            'Yulius', 'Ferdinand', 'Natan', 'Elia', 'Yakobus', 'Melkisedek', 'Lorenzo',
+            'Simon', 'Petrus', 'Thomas', 'Filipus', 'Bartolomeus', 'Tadeus', 'Andreas',
+            'Stephanus', 'Barnabas', 'Silas', 'Timotius', 'Titus', 'Filemon', 'Onesimus',
+            'Kornelius', 'Kleopas', 'Yudas', 'Matius', 'Paulus', 'Silvanus', 'Festus'
         ];
 
         $namaPerempuan = [
-            'Maria', 'Siska', 'Yuliana', 'Kristina', 'Rina', 'Dewi',
-            'Sari', 'Putri', 'Wulan', 'Maya', 'Fitriani', 'Handayani',
-            'Lestari', 'Kusuma', 'Wijaya', 'Sartika', 'Melani', 'Gracia',
-            'Patricia', 'Angelina', 'Fransiska', 'Yosefina', 'Magdalena'
+            'Maria', 'Siska', 'Yuliana', 'Kristina', 'Rina', 'Dewi', 'Sari', 'Putri', 'Wulan',
+            'Maya', 'Fitriani', 'Handayani', 'Lestari', 'Kusuma', 'Sartika', 'Melani', 'Gracia',
+            'Patricia', 'Angelina', 'Fransiska', 'Yosefina', 'Magdalena', 'Agata', 'Monika',
+            'Rosalina', 'Theresia', 'Sukma', 'Indah', 'Citra', 'Ayunda', 'Ningsih', 'Puspa'
         ];
 
         $jalanArdipura = [
@@ -66,19 +68,25 @@ class PendudukSeeder extends Seeder
             'Jl. Hamadi', 'Jl. Holtekamp', 'Jl. Skyline', 'Jl. Trikora'
         ];
 
-        // Generate 40 Kartu Keluarga
+        // Data lengkap untuk 20 KK (setiap KK unik)
+        $kkData = [
+            ['nomor_kk' => '91710100012501', 'alamat' => 'Jl. Boswezen No. 12', 'rt' => '001', 'rw' => '001', 'kepala' => 'Yohanes Kogoya', 'istri' => 'Maria Wenda', 'anak' => 3],
+            ['nomor_kk' => '91710100012502', 'alamat' => 'Jl. Gajah Mada No. 45', 'rt' => '001', 'rw' => '002', 'kepala' => 'Lukas Tabuni', 'istri' => 'Siska Murib', 'anak' => 2],
+            ['nomor_kk' => '91710100012503', 'alamat' => 'Jl. Percetakan Negara No. 8', 'rt' => '002', 'rw' => '001', 'kepala' => 'Matius Wonda', 'istri' => 'Yuliana Gebze', 'anak' => 4],
+            ['nomor_kk' => '91710100012504', 'alamat' => 'Jl. Mandala No. 23', 'rt' => '002', 'rw' => '002', 'kepala' => 'Markus Mahuze', 'istri' => 'Kristina Ndiken', 'anak' => 2],
+            ['nomor_kk' => '91710100012505', 'alamat' => 'Jl. Soa Siu Dok II No. 67', 'rt' => '003', 'rw' => '001', 'kepala' => 'Yusuf Samkakai', 'istri' => 'Rina Kaize', 'anak' => 3],
+            ['nomor_kk' => '91710100012511', 'alamat' => 'Jl. Kelapa No. 90', 'rt' => '006', 'rw' => '001', 'kepala' => 'Natan Auwe', 'istri' => 'Fitriani Auwe', 'anak' => 1],
+        ];
+
         $kartuKeluarga = [];
         $kkCounter = 1;
 
-        for ($i = 0; $i < 40; $i++) {
-            $rt = str_pad(rand(1, 15), 3, '0', STR_PAD_LEFT);
-            $rw = str_pad(rand(1, 10), 3, '0', STR_PAD_LEFT);
-
+        foreach ($kkData as $kk) {
             $kk = KartuKeluarga::create([
-                'nomor_kk' => $this->generateNIK($kkCounter++),
-                'alamat' => $jalanArdipura[array_rand($jalanArdipura)] . ' No. ' . rand(1, 200),
-                'rt' => $rt,
-                'rw' => $rw,
+                'nomor_kk' => $kk['nomor_kk'],
+                'alamat' => $kk['alamat'],
+                'rt' => $kk['rt'],
+                'rw' => $kk['rw'],
                 'kelurahan' => 'Ardipura',
                 'kecamatan' => 'Jayapura Selatan',
                 'kabupaten_kota' => 'Kota Jayapura',
@@ -93,30 +101,37 @@ class PendudukSeeder extends Seeder
         $pendudukCounter = 1;
 
         foreach ($kartuKeluarga as $index => $kk) {
-            $jumlahAnggota = rand(2, 6); // Rata-rata 3-5 orang per KK
+            $kkInfo = $kkData[$index];
+            $jumlahAnggota = $kkInfo['anak'] + 2; // Kepala keluarga + istri + anak
             $agamaKK = $this->getRandomWeighted($agamaList, $agamaWeights);
 
             for ($j = 0; $j < $jumlahAnggota; $j++) {
                 $isKepalaKeluarga = ($j === 0);
-                $jenisKelamin = $isKepalaKeluarga ? 'L' : (rand(0, 1) === 0 ? 'L' : 'P');
+                $isIstri = ($j === 1);
+                $jenisKelamin = $isKepalaKeluarga ? 'L' : ($isIstri ? 'P' : (rand(0, 1) === 0 ? 'L' : 'P'));
 
-                $nama = $jenisKelamin === 'L'
-                    ? $namaLaki[array_rand($namaLaki)]
-                    : $namaPerempuan[array_rand($namaPerempuan)];
-
-                // Tambahkan marga Papua secara acak (~30% penduduk asli Papua)
-                if (rand(1, 100) <= 30) {
-                    $nama .= ' ' . $margaPapua[array_rand($margaPapua)];
+                if ($isKepalaKeluarga) {
+                    $nama = $kkInfo['kepala'];
+                    $pekerjaan = $pekerjaanList[array_rand($pekerjaanList)];
+                } elseif ($isIstri) {
+                    $nama = $kkInfo['istri'];
+                    $pekerjaan = rand(0, 1) === 0 ? 'Ibu Rumah Tangga' : (in_array('Guru', $pekerjaanList) ? 'Guru' : 'Pedagang');
                 } else {
-                    // Nama marga Indonesia umum
-                    $margaIndo = ['Wijaya', 'Kusuma', 'Saputra', 'Putra', 'Pratama', 'Siregar', 'Simanjuntak', 'Lumbangaol'];
-                    if (rand(1, 100) <= 50) {
-                        $nama .= ' ' . $margaIndo[array_rand($margaIndo)];
-                    }
+                    // Anak
+                    $nama = $jenisKelamin === 'L'
+                        ? $namaLaki[array_rand($namaLaki)]
+                        : $namaPerempuan[array_rand($namaPerempuan)];
+                    $pekerjaan = 'Pelajar/Mahasiswa';
                 }
 
-                $tahunLahir = $isKepalaKeluarga ? rand(1960, 1985) : rand(1990, 2010);
+                $tahunLahir = $isKepalaKeluarga ? rand(1960, 1985) : ($isIstri ? rand(1965, 1990) : rand(2000, 2015));
                 $tanggalLahir = sprintf('%04d-%02d-%02d', $tahunLahir, rand(1, 12), rand(1, 28));
+
+                $statusHubungan = $isKepalaKeluarga
+                    ? 'Kepala Keluarga'
+                    : ($isIstri ? 'Istri' : 'Anak');
+
+                $statusPerkawinanValue = $isKepalaKeluarga || $isIstri ? 'Kawin' : $statusPerkawinan[array_rand($statusPerkawinan)];
 
                 $penduduk = Penduduk::create([
                     'nik' => $this->generateNIK($pendudukCounter++),
@@ -126,16 +141,12 @@ class PendudukSeeder extends Seeder
                     'tanggal_lahir' => $tanggalLahir,
                     'jenis_kelamin' => $jenisKelamin,
                     'agama' => $agamaKK,
-                    'status_perkawinan' => $isKepalaKeluarga ? 'Kawin' : $statusKawin[array_rand($statusKawin)],
-                    'pendidikan_terakhir' => $pendidikanList[array_rand($pendidikanList)],
-                    'pekerjaan' => $isKepalaKeluarga
-                        ? $pekerjaanList[array_rand($pekerjaanList)]
-                        : ($tahunLahir > 2010 ? 'Pelajar/Mahasiswa' : $pekerjaanList[array_rand($pekerjaanList)]),
+                    'status_perkawinan' => $statusPerkawinanValue,
+                    'pendidikan_terakhir' => $tahunLahir < 2005 ? $pendidikanList[array_rand($pendidikanList)] : 'SLTA',
+                    'pekerjaan' => $pekerjaan,
                     'kewarganegaraan' => 'WNI',
-                    'golongan_darah' => ['', 'A', 'B', 'AB', 'O', null][rand(0, 5)],
-                    'status_hubungan_keluarga' => $isKepalaKeluarga
-                        ? 'Kepala Keluarga'
-                        : ($jenisKelamin === 'P' && $j === 1 ? 'Istri' : 'Anak'),
+                    'golongan_darah' => ['', 'A', 'B', 'AB', 'O', null][array_rand([0, 1, 2, 3, 4, 5])],
+                    'status_hubungan_keluarga' => $statusHubungan,
                     'nama_ayah' => null,
                     'nama_ibu' => null,
                     'alamat' => $kk->alamat,
@@ -149,10 +160,9 @@ class PendudukSeeder extends Seeder
                     'user_id' => null,
                 ]);
 
-                // Create user account for some warga (20%)
-                if (!$isKepalaKeluarga && rand(1, 100) <= 20 && $tahunLahir < 2005) {
-                    $emailBase = strtolower(str_replace([' ', '\''], ['.', ''], $nama));
-                    $email = $emailBase . '.' . $pendudukCounter . '@gmail.com';
+                // Create user account untuk beberapa warga dewasa (20%)
+                if (!$isKepalaKeluarga && !$isIstri && rand(1, 100) <= 20 && $tahunLahir < 2005) {
+                    $email = strtolower(str_replace(' ', '.', $nama)) . '.' . $penduduk->id . '@gmail.com';
                     $user = User::create([
                         'name' => $nama,
                         'email' => $email,
@@ -161,7 +171,6 @@ class PendudukSeeder extends Seeder
                         'email_verified_at' => now(),
                     ]);
 
-                    // Link user to penduduk
                     $penduduk->update(['user_id' => $user->id]);
                 }
             }

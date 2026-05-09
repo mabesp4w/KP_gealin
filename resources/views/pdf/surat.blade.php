@@ -123,7 +123,7 @@
     </div>
 
     <div class="content">
-        <p>Yang bertanda tangan di bawah ini Kepala Kelurahan Ardipura, Kecamatan Jayapura Selatan, Kota Jayapura, Provinsi Papua, menerangkan dengan sebenarnya bahwa:</p>
+        <p>Yang bertanda tangan di bawah ini Lurah Ardipura, Kecamatan Jayapura Selatan, Kota Jayapura, Provinsi Papua, menerangkan dengan sebenarnya bahwa:</p>
 
         <div class="data-table">
             <table>
@@ -183,15 +183,15 @@
 
     <div class="ttd">
         <p>{{ \Carbon\Carbon::parse($surat->tanggal_surat)->locale('id')->translatedFormat('d F Y') }}</p>
-        <p>Kepala Kelurahan Ardipura</p>
+        <p>Lurah Ardipura</p>
 
         <div class="ttd-space"></div>
 
-        <p><strong>( ........................................ )</strong></p>
+        <p><strong>PHILIPUS WAMEA</strong></p>
         @if($surat->jabatan_penandatangan)
         <p>{{ $surat->jabatan_penandatangan }}</p>
         @else
-        <p>a.n. Lurah Ardipura</p>
+        <p>Pembina Utama Muda</p>
         @endif
     </div>
 </body>

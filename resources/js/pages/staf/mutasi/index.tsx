@@ -26,22 +26,7 @@ import {
 } from '@/components/ui';
 import StafLayout from '@/layouts/StafLayout';
 import { mutasiSchema, defaultValues, type MutasiFormValues } from './schema';
-
-/** Parse "YYYY-MM-DD" or ISO string to Date, returns null if invalid */
-const parseDate = (v: string | null | undefined): Date | null => {
-    if (!v) return null;
-    const d = new Date(v);
-    return isNaN(d.getTime()) ? null : d;
-};
-
-/** Format Date to "YYYY-MM-DD" string for backend */
-const formatDate = (d: Date | null): string => {
-    if (!d) return '';
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${y}-${m}-${day}`;
-};
+import { formatDate, formatDateShort, parseDate, toDateString } from '@/lib/date';
 
 // ── Types ──────────────────────────────────────────────────
 
@@ -338,7 +323,7 @@ export default function MutasiIndex({ mutasi, filters, penduduk }: Props) {
                                                 </Badge>
                                             </TableCell>
                                             <TableCell>
-                                                {new Date(item.tanggal_mutasi).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                                {formatDateShort(item.tanggal_mutasi)}
                                             </TableCell>
                                             <TableCell className="hidden md:table-cell text-xs">
                                                 {item.asal_tujuan || '—'}
@@ -542,7 +527,7 @@ export default function MutasiIndex({ mutasi, filters, penduduk }: Props) {
                                 <span className="font-medium">Jenis:</span> {JENIS_MUTASI_COLORS[deletingItem.jenis_mutasi]?.label || deletingItem.jenis_mutasi}
                             </p>
                             <p className="text-sm">
-                                <span className="font-medium">Tanggal:</span> {new Date(deletingItem.tanggal_mutasi).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+                                <span className="font-medium">Tanggal:</span> {formatDate(deletingItem.tanggal_mutasi)}
                             </p>
                         </div>
                     )}

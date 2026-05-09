@@ -2,6 +2,7 @@ import { Head, usePage } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import StafLayout from '@/layouts/StafLayout';
 import { Stat, Card, CardBody, CardTitle, Badge, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow, type BadgeColor } from '@/components/ui';
+import { formatDateTime } from '@/lib/date';
 
 interface DashboardStats {
     totalPenduduk: number;
@@ -254,7 +255,7 @@ export default function StafDashboard({ stats, pengajuanTerbaru, mutasiTerbaru }
                                                 <TableRow key={item.id} hover>
                                                     <TableCell>
                                                         <div className="font-medium">{item.nama_penduduk}</div>
-                                                        <div className="text-xs text-base-content/60">{item.created_at}</div>
+                                                        <div className="text-xs text-base-content/60">{formatDateTime(item.created_at)}</div>
                                                     </TableCell>
                                                     <TableCell>
                                                         <div className="text-sm">{item.jenis_surat}</div>

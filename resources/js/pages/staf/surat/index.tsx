@@ -25,22 +25,7 @@ import {
 } from '@/components/ui';
 import StafLayout from '@/layouts/StafLayout';
 import { suratSchema, defaultValues, type SuratFormValues } from './schema';
-
-/** Parse "YYYY-MM-DD" or ISO string to Date, returns null if invalid */
-const parseDate = (v: string | null | undefined): Date | null => {
-    if (!v) return null;
-    const d = new Date(v);
-    return isNaN(d.getTime()) ? null : d;
-};
-
-/** Format Date to "YYYY-MM-DD" string for backend */
-const formatDate = (d: Date | null): string => {
-    if (!d) return '';
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${y}-${m}-${day}`;
-};
+import { formatDate, formatDateShort, parseDate, toDateString } from '@/lib/date';
 
 // ── Types ──────────────────────────────────────────────────
 
@@ -116,6 +101,10 @@ export default function Index({ surat, filters, jenisSurat, pendudukList }: Prop
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isBatalkanOpen, setIsBatalkanOpen] = useState(false);
     const [batalkanItem, setBatalkanItem] = useState<Surat | null>(null);
+    const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+    const [deleteItem, setDeleteItem] = useState<Surat | null>(null);
+    const [isTerbitkanOpen, setIsTerbitkanOpen] = useState(false);
+    const [terbitkanItem, setTerbitkanItem] = useState<Surat | null>(null);
 
     const { control, handleSubmit, reset, setError, formState: { errors } } = useForm<SuratFormValues>({
         resolver: yupResolver(suratSchema),
@@ -167,7 +156,7 @@ export default function Index({ surat, filters, jenisSurat, pendudukList }: Prop
         setEditingItem(null);
         reset({
             ...defaultValues,
-            tanggal_surat: formatDate(new Date()),
+            tanggal_surat: toDateString(new Date()),
         });
         setIsFormOpen(true);
     }, [reset]);
@@ -216,18 +205,36 @@ export default function Index({ surat, filters, jenisSurat, pendudukList }: Prop
     // ── Actions ─────────────────────────────────────────────
 
     const handleDelete = useCallback((item: Surat) => {
-        if (!confirm(`Hapus surat ${item.nomor_surat}?`)) return;
-        router.delete(`/staf/surat/${item.id}`, {
-            onError: () => showError('Gagal menghapus surat.'),
-        });
+        setDeleteItem(item);
+        setIsDeleteOpen(true);
     }, []);
 
+    const executeDelete = useCallback(() => {
+        if (!deleteItem) return;
+        router.delete(`/staf/surat/${deleteItem.id}`, {
+            onSuccess: () => {
+                setIsDeleteOpen(false);
+                setDeleteItem(null);
+            },
+            onError: () => showError('Gagal menghapus surat.'),
+        });
+    }, [deleteItem]);
+
     const handleTerbitkan = useCallback((item: Surat) => {
-        if (!confirm(`Terbitkan surat ${item.nomor_surat}?`)) return;
-        router.post(`/staf/surat/${item.id}/terbitkan`, {}, {
+        setTerbitkanItem(item);
+        setIsTerbitkanOpen(true);
+    }, []);
+
+    const executeTerbitkan = useCallback(() => {
+        if (!terbitkanItem) return;
+        router.post(`/staf/surat/${terbitkanItem.id}/terbitkan`, {}, {
+            onSuccess: () => {
+                setIsTerbitkanOpen(false);
+                setTerbitkanItem(null);
+            },
             onError: () => showError('Gagal menerbitkan surat.'),
         });
-    }, []);
+    }, [terbitkanItem]);
 
     const handleBatalkan = useCallback((item: Surat) => {
         setBatalkanItem(item);
@@ -366,7 +373,7 @@ export default function Index({ surat, filters, jenisSurat, pendudukList }: Prop
                                             <div className="text-sm max-w-xs truncate">{item.perihal}</div>
                                         </TableCell>
                                         <TableCell>
-                                            <div className="text-sm">{item.tanggal_surat}</div>
+                                            <div className="text-sm">{formatDateShort(item.tanggal_surat)}</div>
                                         </TableCell>
                                         <TableCell>
                                             <Badge color={STATUS_COLORS[item.status] || 'info'} size="sm">
@@ -496,9 +503,8 @@ export default function Index({ surat, filters, jenisSurat, pendudukList }: Prop
                                         <DatePickerInput
                                             label="Tanggal Surat"
                                             selected={parseDate(field.value)}
-                                            onChange={(date) => field.onChange(formatDate(date))}
+                                            onChange={(date) => field.onChange(toDateString(date))}
                                             error={errors.tanggal_surat?.message}
-                                            dateFormat="yyyy-MM-dd"
                                         />
                                     )}
                                 />
@@ -599,6 +605,32 @@ export default function Index({ surat, filters, jenisSurat, pendudukList }: Prop
                     <ModalAction>
                         <Button color="ghost" onClick={() => setIsBatalkanOpen(false)}>Batal</Button>
                         <Button color="error" onClick={executeBatalkan}>Ya, Batalkan</Button>
+                    </ModalAction>
+                </Modal>
+
+                {/* Delete Modal */}
+                <Modal open={isDeleteOpen} onClose={() => setIsDeleteOpen(false)}>
+                    <ModalHeader>Hapus Surat</ModalHeader>
+                    <ModalBody>
+                        <p>Yakin ingin menghapus surat <strong>{deleteItem?.nomor_surat || '-'}</strong>?</p>
+                        <p className="text-sm text-error mt-2">Tindakan ini tidak dapat dibatalkan. Data akan dihapus permanen dari sistem.</p>
+                    </ModalBody>
+                    <ModalAction>
+                        <Button color="ghost" onClick={() => setIsDeleteOpen(false)}>Batal</Button>
+                        <Button color="error" onClick={executeDelete}>Ya, Hapus</Button>
+                    </ModalAction>
+                </Modal>
+
+                {/* Terbitkan Modal */}
+                <Modal open={isTerbitkanOpen} onClose={() => setIsTerbitkanOpen(false)}>
+                    <ModalHeader>Terbitkan Surat</ModalHeader>
+                    <ModalBody>
+                        <p>Yakin ingin menerbitkan surat <strong>{terbitkanItem?.nomor_surat || '-'}</strong>?</p>
+                        <p className="text-sm text-info mt-2">Status surat akan diubah menjadi "Diterbitkan" dan siap untuk dicetak.</p>
+                    </ModalBody>
+                    <ModalAction>
+                        <Button color="ghost" onClick={() => setIsTerbitkanOpen(false)}>Batal</Button>
+                        <Button color="success" onClick={executeTerbitkan}>Ya, Terbitkan</Button>
                     </ModalAction>
                 </Modal>
             </div>

@@ -234,9 +234,8 @@ class PengajuanSuratController extends Controller
      */
     private function getSignatoryName(): string
     {
-        // TODO: Ambil dari database settings atau config
-        // Untuk sementara hardcode, bisa diganti dengan nama Lurah yang sebenarnya
-        return 'Lurah Kelurahan Ardipura';
+        // Lurah Kelurahan Ardipura
+        return 'PHILIPUS WAMEA';
     }
 
     /**
@@ -244,7 +243,7 @@ class PengajuanSuratController extends Controller
      */
     private function getSignatoryTitle(): string
     {
-        return 'Lurah';
+        return 'Pembina Utama Muda';
     }
 
     private function rules(bool $isUpdate = false): array

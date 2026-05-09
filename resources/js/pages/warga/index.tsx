@@ -2,6 +2,7 @@ import { Head, usePage } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import WargaLayout from '@/layouts/WargaLayout';
 import { Card, CardBody, CardTitle, Stat, Badge, Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from '@/components/ui';
+import { formatDate, formatDateShort } from '@/lib/date';
 
 interface WargaPenduduk {
     id: number;
@@ -129,7 +130,7 @@ export default function WargaDashboard({ penduduk, kartuKeluarga, pengajuanTerba
                                             </TableRow>
                                             <TableRow>
                                                 <TableCell className="font-medium">Tempat/Tanggal Lahir</TableCell>
-                                                <TableCell>{penduduk.tempat_lahir}, {new Date(penduduk.tanggal_lahir).toLocaleDateString('id-ID')}</TableCell>
+                                                <TableCell>{penduduk.tempat_lahir}, {formatDate(penduduk.tanggal_lahir)}</TableCell>
                                             </TableRow>
                                             <TableRow>
                                                 <TableCell className="font-medium">Jenis Kelamin</TableCell>
@@ -217,7 +218,7 @@ export default function WargaDashboard({ penduduk, kartuKeluarga, pengajuanTerba
                                                     </Badge>
                                                 </TableCell>
                                                 <TableCell className="text-sm text-base-content/60">
-                                                    {new Date(item.created_at).toLocaleDateString('id-ID')}
+                                                    {formatDateShort(item.created_at)}
                                                 </TableCell>
                                             </TableRow>
                                         ))}

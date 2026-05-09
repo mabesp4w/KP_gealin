@@ -1,6 +1,7 @@
 import { Head, usePage } from '@inertiajs/react';
+import { useState, FormEvent } from 'react';
 import { PageProps } from '@/types';
-import { Card, CardBody, CardTitle, Button } from '@/components/ui';
+import { Card, CardBody, CardTitle, Button, Modal, ModalHeader, ModalBody, ModalAction } from '@/components/ui';
 
 interface TwoFactorProps extends PageProps {
     twoFactorEnabled: boolean;
@@ -9,6 +10,33 @@ interface TwoFactorProps extends PageProps {
 
 export default function TwoFactor({ twoFactorEnabled }: TwoFactorProps) {
     const { props } = usePage<TwoFactorProps>();
+    const [isDisableOpen, setIsDisableOpen] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const executeDisable = (e: FormEvent) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/user/two-factor-authentication';
+
+        const methodInput = document.createElement('input');
+        methodInput.type = 'hidden';
+        methodInput.name = '_method';
+        methodInput.value = 'DELETE';
+        form.appendChild(methodInput);
+
+        const tokenInput = document.createElement('input');
+        tokenInput.type = 'hidden';
+        tokenInput.name = '_token';
+        const token = (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement)?.content;
+        if (token) tokenInput.value = token;
+        form.appendChild(tokenInput);
+
+        document.body.appendChild(form);
+        form.submit();
+    };
 
     return (
         <>
@@ -61,24 +89,15 @@ export default function TwoFactor({ twoFactorEnabled }: TwoFactorProps) {
                                             >
                                                 Recovery Codes
                                             </a>
-                                            <form
-                                                method="POST"
-                                                action="/user/two-factor-authentication"
-                                                className="inline"
+                                            <Button
+                                                color="error"
+                                                variant="outline"
+                                                size="sm"
+                                                className="ml-2"
+                                                onClick={() => setIsDisableOpen(true)}
                                             >
-                                                <input type="hidden" name="_method" value="DELETE" />
-                                                <button
-                                                    type="submit"
-                                                    className="btn btn-error btn-outline btn-sm ml-2"
-                                                    onClick={(e) => {
-                                                        if (!confirm('Nonaktifkan 2FA? Akun akan menjadi kurang aman.')) {
-                                                            e.preventDefault();
-                                                        }
-                                                    }}
-                                                >
-                                                    Nonaktifkan 2FA
-                                                </button>
-                                            </form>
+                                                Nonaktifkan 2FA
+                                            </Button>
                                         </div>
                                     )}
                                 </div>
@@ -103,6 +122,25 @@ export default function TwoFactor({ twoFactorEnabled }: TwoFactorProps) {
                     </Card>
                 </div>
             </div>
+
+            {/* Disable 2FA Modal */}
+            <Modal open={isDisableOpen} onClose={() => setIsDisableOpen(false)}>
+                <ModalHeader>Nonaktifkan 2FA</ModalHeader>
+                <ModalBody>
+                    <p>Apakah Anda yakin ingin menonaktifkan autentikasi dua faktor?</p>
+                    <p className="text-sm text-warning mt-2">Akun akan menjadi kurang aman tanpa perlindungan 2FA.</p>
+                </ModalBody>
+                <ModalAction>
+                    <Button color="ghost" onClick={() => setIsDisableOpen(false)}>Batal</Button>
+                    <Button
+                        color="error"
+                        loading={isSubmitting}
+                        onClick={executeDisable}
+                    >
+                        Ya, Nonaktifkan
+                    </Button>
+                </ModalAction>
+            </Modal>
         </>
     );
 }
