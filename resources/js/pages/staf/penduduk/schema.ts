@@ -46,7 +46,7 @@ export const defaultValues: PendudukFormValues = {
     tempat_lahir: '',
     tanggal_lahir: '',
     jenis_kelamin: 'L',
-    agama: 'Islam',
+    agama: 'Kristen Protestan',
     status_perkawinan: 'Belum Kawin',
     pendidikan_terakhir: 'SLTA',
     pekerjaan: '',

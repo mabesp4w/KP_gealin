@@ -10,6 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Models\PengajuanSurat;
 
 class SuratController extends Controller
 {
@@ -110,6 +111,17 @@ class SuratController extends Controller
 
         $surat->update(['status' => 'diterbitkan']);
 
+        // Update pengajuan status jika surat berasal dari pengajuan
+        if ($surat->pengajuan_surat_id) {
+            $pengajuan = PengajuanSurat::find($surat->pengajuan_surat_id);
+            if ($pengajuan) {
+                $pengajuan->update([
+                    'status' => 'selesai',
+                    'tanggal_diproses' => now(),
+                ]);
+            }
+        }
+
         return to_route('staf.surat.index')
             ->with('success', "Surat {$surat->nomor_surat} berhasil diterbitkan.");
     }
@@ -125,6 +137,14 @@ class SuratController extends Controller
         }
 
         $surat->update(['status' => 'dibatalkan']);
+
+        // Update pengajuan status jika surat berasal dari pengajuan
+        if ($surat->pengajuan_surat_id) {
+            $pengajuan = PengajuanSurat::find($surat->pengajuan_surat_id);
+            if ($pengajuan) {
+                $pengajuan->update(['status' => 'ditolak']);
+            }
+        }
 
         return to_route('staf.surat.index')
             ->with('success', "Surat {$surat->nomor_surat} dibatalkan.");

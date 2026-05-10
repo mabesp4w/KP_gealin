@@ -5,6 +5,7 @@ import { Controller, useForm } from 'react-hook-form';
 import {
     Button,
     TextInput,
+    PasswordInput,
     Textarea,
     NativeSelect,
     DatePickerInput,
@@ -477,10 +478,11 @@ export default function PendudukIndex({ penduduk, filters, kartuKeluarga }: Prop
                                         <DatePickerInput
                                             label="Tanggal Lahir"
                                             selected={parseDate(field.value)}
-                                            onChange={(date) => field.onChange(formatDate(date))}
+                                            onChange={(date) => field.onChange(toDateString(date))}
                                             error={errors.tanggal_lahir?.message}
                                             placeholder="Pilih tanggal lahir"
                                             isClearable
+                                            minAge={17}
                                         />
                                     )} />
                                     <Controller name="jenis_kelamin" control={control} render={({ field }) => (
@@ -622,9 +624,8 @@ export default function PendudukIndex({ penduduk, filters, kartuKeluarga }: Prop
                                                     />
                                                 )} />
                                                 <Controller name="user_password" control={control} render={({ field }) => (
-                                                    <TextInput
+                                                    <PasswordInput
                                                         label="Password"
-                                                        type="password"
                                                         placeholder="Minimal 6 karakter"
                                                         {...field}
                                                         value={field.value ?? ''}

@@ -19,7 +19,10 @@ class SuratCetakController extends Controller
             $surat->save();
         }
 
-        $pdf = PDF::loadView('pdf.surat', compact('surat'));
+        // Path logo untuk dompdf (harus full file system path)
+        $logoPath = public_path('logo.png');
+
+        $pdf = PDF::loadView('pdf.surat', compact('surat', 'logoPath'));
 
         $filename = "surat-{$surat->jenisSurat->kode}-{$surat->penduduk->nama_lengkap}.pdf";
 
@@ -30,7 +33,9 @@ class SuratCetakController extends Controller
     {
         $surat->load(['penduduk', 'jenisSurat', 'pengajuan']);
 
-        return view('pdf.surat', compact('surat'));
+        $logoPath = public_path('logo.png');
+
+        return view('pdf.surat', compact('surat', 'logoPath'));
     }
 
     private function generateNomorSurat(Surat $surat): string

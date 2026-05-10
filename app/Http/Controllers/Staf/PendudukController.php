@@ -117,7 +117,7 @@ class PendudukController extends Controller
 
     public function destroy(Penduduk $penduduk): RedirectResponse
     {
-        // Cek relasi yang mencegah hapus
+        // Cek relasi yang mencegah hapus (selain akun login)
         $relations = [];
 
         if ($penduduk->mutasi()->count() > 0) {
@@ -129,13 +129,15 @@ class PendudukController extends Controller
         if ($penduduk->pengajuanSurat()->count() > 0) {
             $relations[] = 'pengajuan surat';
         }
-        if ($penduduk->user_id !== null) {
-            $relations[] = 'akun login';
-        }
 
         if (!empty($relations)) {
             $relationList = implode(', ', $relations);
             return back()->with('error', "Tidak dapat menghapus penduduk ini karena masih memiliki data terkait: {$relationList}. Hapus data tersebut terlebih dahulu.");
+        }
+
+        // Hapus akun login jika ada
+        if ($penduduk->user_id !== null) {
+            User::destroy($penduduk->user_id);
         }
 
         $penduduk->delete();

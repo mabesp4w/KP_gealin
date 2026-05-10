@@ -2,6 +2,8 @@
 <html>
 <head>
     <meta charset="utf-8">
+    <link rel="icon" href="/logo.svg" type="image/svg+xml">
+    <link rel="icon" href="/logo.png" sizes="32x32">
     <style>
         @page {
             margin-top: 2cm;
@@ -19,6 +21,17 @@
             border-bottom: 3px double #000;
             padding-bottom: 10px;
             margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        .kop-logo {
+            width: 80px;
+            height: auto;
+        }
+        .kop-text {
+            flex: 1;
         }
         .kop h1 {
             font-size: 14pt;
@@ -108,10 +121,15 @@
 </head>
 <body>
     <div class="kop">
-        <h1>Pemerintah Kota Jayapura</h1>
-        <h2>Kelurahan Ardipura</h2>
-        <p>Jl. Dokter Soetomo No. 1, Jayapura Selatan</p>
-        <p>Kota Jayapura, Papua</p>
+        @if(file_exists($logoPath))
+        <img src="{{ $logoPath }}" alt="Logo Pemerintah Kota Jayapura" class="kop-logo">
+        @endif
+        <div class="kop-text">
+            <h1>Pemerintah Kota Jayapura</h1>
+            <h2>Kelurahan Ardipura</h2>
+            <p>Jl. Dokter Soetomo No. 1, Jayapura Selatan</p>
+            <p>Kota Jayapura, Papua</p>
+        </div>
     </div>
 
     <div class="nomor">

@@ -18,7 +18,7 @@ class PengajuanSuratController extends Controller
     public function index(Request $request): Response
     {
         $search = trim((string) $request->input('search', ''));
-        $status = trim((string) $request->input('status', 'menunggu'));
+        $status = trim((string) $request->input('status', ''));
         $jenis = trim((string) $request->input('jenis', ''));
 
         $paginator = PengajuanSurat::with(['penduduk', 'jenisSurat', 'user', 'lampiran.persyaratanSurat'])
@@ -170,13 +170,12 @@ class PengajuanSuratController extends Controller
 
         // If status changed to 'ditolak', delete any existing surat
         if ($newStatus === 'ditolak' && $existingSurat) {
-            // Delete the surat
             $existingSurat->delete();
             return;
         }
 
-        // If status changed to 'diproses' or 'selesai' from 'menunggu' or 'ditolak'
-        if (in_array($newStatus, ['diproses', 'selesai']) && in_array($oldStatus, ['menunggu', 'ditolak'])) {
+        // If status changed to 'selesai' or 'diproses'
+        if (in_array($newStatus, ['diproses', 'selesai'])) {
             // Create surat if it doesn't exist
             if (!$existingSurat) {
                 $nomorSurat = $this->generateNomorSurat($pengajuan->jenis_surat_id);
@@ -194,9 +193,19 @@ class PengajuanSuratController extends Controller
                     'ditandatangani_oleh' => $this->getSignatoryName(),
                     'jabatan_penandatangan' => $this->getSignatoryTitle(),
                 ]);
-            } elseif ($newStatus === 'selesai' && $existingSurat->status === 'draft') {
-                // Update surat status to diterbitkan if pengajuan is selesai
-                $existingSurat->update(['status' => 'diterbitkan']);
+            } else {
+                // Update existing surat based on new pengajuan status
+                if ($newStatus === 'selesai') {
+                    // Pengajuan selesai → surat diterbitkan
+                    if ($existingSurat->status === 'draft' || $existingSurat->status === 'dibatalkan') {
+                        $existingSurat->update(['status' => 'diterbitkan']);
+                    }
+                } elseif ($newStatus === 'diproses') {
+                    // Pengajuan diproses → jika surat dibatalkan, jadikan draft lagi
+                    if ($existingSurat->status === 'dibatalkan') {
+                        $existingSurat->update(['status' => 'draft']);
+                    }
+                }
             }
         }
     }

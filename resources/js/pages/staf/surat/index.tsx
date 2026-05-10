@@ -309,7 +309,6 @@ export default function Index({ surat, filters, jenisSurat, pendudukList }: Prop
                                 )}
                             </label>
                             <select className="select sm:w-40" value={statusFilter} onChange={(e) => handleFilterChange('status', e.target.value)}>
-                                <option value="">Semua Status</option>
                                 {STATUS_OPTIONS.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
                             </select>
                             <select className="select sm:w-48" value={jenisFilter} onChange={(e) => handleFilterChange('jenis', e.target.value)}>
