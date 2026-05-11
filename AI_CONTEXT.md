@@ -4,7 +4,7 @@
 > memeriksa keseluruhan program di setiap sesi baru. Baca file ini terlebih dahulu
 > sebelum melakukan perubahan apapun.
 >
-> **Terakhir diperbarui**: 2026-01-09 (Session 7 - Perbaikan PDF & Title Attribute)
+> **Terakhir diperbarui**: 2026-05-11 (Session 8 - Sinkronisasi Dokumentasi)
 
 ---
 
@@ -103,12 +103,19 @@ gealin/
 │   │   │       ├── ProfileController.php              # edit/update/destroy profile
 │   │   │       ├── PasswordController.php             # edit/update password
 │   │   │       └── TwoFactorAuthenticationController.php # show 2FA settings
-│   │   ├── Middleware/                 # (empty — use Laravel defaults)
-│   │   └── Requests/Settings/
-│   │       ├── ProfileUpdateRequest.php               # uses ProfileValidationRules
-│   │       ├── ProfileDeleteRequest.php               # validates current password
-│   │       ├── PasswordUpdateRequest.php              # validates current + new password
-│   │       └── TwoFactorAuthenticationRequest.php     # authorization check
+│   │   ├── Middleware/
+│   │   │   ├── EnsureUserHasRole.php                  # Role-based access middleware (staf/warga)
+│   │   │   ├── HandleAppearance.php                   # Theme appearance middleware
+│   │   │   ├── HandleInertiaRequests.php               # Shares flash messages, auth data to Inertia
+│   │   │   └── RedirectByRole.php                     # Redirects user to role-specific home
+│   │   └── Requests/
+│   │       ├── Settings/
+│   │       │   ├── ProfileUpdateRequest.php            # uses ProfileValidationRules
+│   │       │   ├── ProfileDeleteRequest.php            # validates current password
+│   │       │   ├── PasswordUpdateRequest.php           # validates current + new password
+│   │       │   └── TwoFactorAuthenticationRequest.php  # authorization check
+│   │       ├── StorePersyaratanSuratRequest.php        # Validate store persyaratan surat
+│   │       └── UpdatePersyaratanSuratRequest.php       # Validate update persyaratan surat
 │   ├── Models/
 │   │   ├── User.php                   # HasFactory, Notifiable, TwoFactorAuthenticatable, isStaf(), isWarga()
 │   │   ├── KartuKeluarga.php          # hasMany Penduduk
@@ -138,17 +145,19 @@ gealin/
 │   │   ├── 2026_05_06_000003_create_surat_table.php
 │   │   ├── 2026_05_06_000004_create_mutasi_penduduk_table.php
 │   │   ├── 2026_05_06_000005_create_lampiran_pengajuan_table.php
-│   │   └── 2026_05_08_094642_create_persyaratan_surat_table.php
+│   │   ├── 2026_05_08_094642_create_persyaratan_surat_table.php
+│   │   └── 2026_05_09_213020_add_persyaratan_surat_id_to_lampiran_pengajuan_table.php
 │   └── seeders/
-│       ├── DatabaseSeeder.php         # Creates staf & warga test accounts + calls JenisSuratSeeder
-│       └── JenisSuratSeeder.php       # Seeds 13 jenis surat (SK-DOM, SKTM, SK-USAHA, etc.)
+│       ├── DatabaseSeeder.php         # Creates staf account + calls JenisSuratSeeder & PendudukSeeder
+│       ├── JenisSuratSeeder.php       # Seeds 13 jenis surat (SK-DOM, SKTM, SK-USAHA, etc.)
+│       └── PendudukSeeder.php         # Seeds 6 KK + penduduk + beberapa user warga
 ├── resources/
 │   ├── css/app.css                    # TailwindCSS + daisyUI + global form styles
 │   ├── views/pdf/surat.blade.php      # PDF template untuk cetak surat
 │   └── js/
 │       ├── app.tsx                    # Inertia entry + <Toaster />
 │       ├── ssr.tsx                    # SSR entry point
-│       ├── components/ui/            # ★ 41 reusable UI components (see Section 6)
+│       ├── components/ui/            # ★ 42 reusable UI components (see Section 6)
 │       ├── hooks/
 │       │   └── use-appearance.ts     # Theme hook (light/dark/system)
 │       ├── pages/
@@ -173,7 +182,8 @@ gealin/
 │       ├── layouts/
 │       │   ├── StafLayout.tsx        # Sidebar + Navbar + flash toast listener
 │       │   └── WargaLayout.tsx       # Warga layout (simple)
-│       ├── lib/                      # (EMPTY)
+│       ├── lib/
+│       │   └── date.ts              # Date utilities: formatDate, parseDate, toDateString, formatRelativeTime (Indonesian locale)
 │       └── types/                    # PageProps interface
 ├── routes/
 │   ├── web.php                       # Staf routes (penduduk, kk, mutasi, surat, pengajuan, jenis-surat)
@@ -389,6 +399,7 @@ Resource /staf/penduduk   → PendudukController [auth, staf]
   POST   /staf/penduduk           → store
   PUT    /staf/penduduk/{id}      → update
   DELETE /staf/penduduk/{id}      → destroy
+  POST   /staf/penduduk/reset-password → resetPassword (reset password penduduk/warga)
 Resource /staf/kartu-keluarga → KartuKeluargaController [auth, staf]
   GET    /staf/kartu-keluarga           → index (paginated, search)
   POST   /staf/kartu-keluarga           → store
@@ -451,14 +462,17 @@ GET  /warga/surat/{pengajuanId}/preview → preview HTML [auth, warga]
 
 ### Fortify Auth Views (defined in `FortifyServiceProvider`)
 ```
-login              → Inertia::render('auth/login')              — props: canResetPassword, canRegister, status
-register           → Inertia::render('auth/register')
-forgot-password    → Inertia::render('auth/forgot-password')    — props: status
-reset-password     → Inertia::render('auth/reset-password')     — props: email, token
-verify-email       → Inertia::render('auth/verify-email')       — props: status
-two-factor-challenge → Inertia::render('auth/two-factor-challenge')
-confirm-password   → Inertia::render('auth/confirm-password')
+login              → Inertia::render('auth/login')              — props: canResetPassword, canRegister, status  ✅ ADA
+register           → Inertia::render('auth/register')            ❌ BELUM ADA (view belum dibuat)
+forgot-password    → Inertia::render('auth/forgot-password')    ❌ BELUM ADA (view belum dibuat)
+reset-password     → Inertia::render('auth/reset-password')     ❌ BELUM ADA (view belum dibuat)
+verify-email       → Inertia::render('auth/verify-email')       ❌ BELUM ADA (view belum dibuat)
+two-factor-challenge → Inertia::render('auth/two-factor-challenge') ❌ BELUM ADA (view belum dibuat)
+confirm-password   → Inertia::render('auth/confirm-password')   ❌ BELUM ADA (view belum dibuat)
 ```
+
+> **Catatan**: Fortify features (registration, reset password, dll) **enabled di config**,
+> tapi hanya `auth/login.tsx` yang sudah dibuat sebagai view.
 
 ### Fortify Features (enabled)
 - Registration
@@ -542,6 +556,7 @@ interface LaravelPaginationData {
 | Component | Props |
 |-----------|-------|
 | `TextInput` | `label?, altLabel?, color?, size?, variant?: 'bordered'\|'ghost', error?, topRightLabel?, bottomRightLabel?` |
+| `PasswordInput` | `label?, altLabel?, color?, size?, variant?: 'bordered'\|'ghost', error?, topRightLabel?, bottomRightLabel?` — toggle show/hide password dengan eye icon |
 | `Textarea` | `label?, altLabel?, color?, size?, variant?, error?` |
 | `SelectInput` | `label?, error?` + semua props `react-select` — auto daisyUI-themed via `getDaisyStyles()` |
 | `NativeSelect` | `label?, altLabel?, options: NativeSelectOption[], placeholder?, color?, size?, variant?, error?` |
@@ -638,7 +653,10 @@ emailRules(?int $userId)   → ['required', 'string', 'email', 'max:255', Rule::
 
 ### Seeder
 ```php
-// DatabaseSeeder creates: Test User / test@example.com / password
+// DatabaseSeeder creates:
+// 1. Admin Staf / staf@ardipura.go.id / 123456 (role: staf)
+// 2. Calls JenisSuratSeeder (13 jenis surat)
+// 3. Calls PendudukSeeder (6 KK + penduduk + beberapa user warga dengan password: password123)
 ```
 
 ---
@@ -741,7 +759,8 @@ npm run types
 
 ### ✅ Yang Sudah Ada
 - Full stack & config (Laravel 12, React 19, Inertia, TailwindCSS v4, daisyUI v5)
-- 41 reusable UI components dengan TypeScript types
+- **4 custom Middleware**: EnsureUserHasRole, HandleAppearance, HandleInertiaRequests, RedirectByRole
+- 42 reusable UI components dengan TypeScript types (incl. PasswordInput)
 - Auth system (Fortify) — login page di root `/`
 - **Database MySQL** (`KP_gealing`) dengan 13 migrations
 - **9 Eloquent Models** dengan relationships lengkap
@@ -833,6 +852,9 @@ npm run types
 - ~~**Settings Pages** — profile, password, appearance, 2FA~~ ✅ Selesai (Session 5)
 - ~~**Cetak Surat** — generate PDF surat~~ ✅ Selesai (Session 5)
 - ~~**Laporan** — laporan kependudukan & surat~~ ✅ Selesai (Session 5)
+
+### ❌ Yang Belum Ada
+- **Auth pages selain login** — register, forgot-password, reset-password, verify-email, two-factor-challenge, confirm-password (Fortify features enabled tapi view belum dibuat)
 
 ### ✅ SEMUA FITUR UTAMA SELESAI!
 

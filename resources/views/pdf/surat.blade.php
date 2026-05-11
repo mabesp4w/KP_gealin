@@ -2,6 +2,8 @@
 <html>
 <head>
     <meta charset="utf-8">
+    <title>Cetak Surat - Kelurahan Ardipura</title>
+    <link rel="shortcut icon" href="/logo.png">
     <link rel="icon" href="/logo.svg" type="image/svg+xml">
     <link rel="icon" href="/logo.png" sizes="32x32">
     <style>
@@ -17,21 +19,21 @@
             line-height: 1.5;
         }
         .kop {
+            position: relative;
             text-align: center;
             border-bottom: 3px double #000;
             padding-bottom: 10px;
             margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
         }
         .kop-logo {
-            width: 80px;
+            position: absolute;
+            left: 0;
+            top: 5px;
+            width: 65px;
             height: auto;
         }
         .kop-text {
-            flex: 1;
+            text-align: center;
         }
         .kop h1 {
             font-size: 14pt;
