@@ -4,7 +4,7 @@
 > memeriksa keseluruhan program di setiap sesi baru. Baca file ini terlebih dahulu
 > sebelum melakukan perubahan apapun.
 >
-> **Terakhir diperbarui**: 2026-05-11 (Session 8 - Sinkronisasi Dokumentasi)
+> **Terakhir diperbarui**: 2026-05-27 (Session 11 - Logo Kota Jayapura, Halaman Publik Modern)
 
 ---
 
@@ -54,14 +54,14 @@ toast notifications, dan debounced auto-search.
 @source '../views';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @plugin "daisyui" {
-  themes: emerald --default, forest --prefersDark;
+  themes: emerald --default, forest --prefersdark;
 }
 ```
 
 **Global form styles** di `app.css`:
-- Border global untuk semua `input`, `select`, `textarea` (1px base-content/20)
-- Focus state: primary border + ring glow
-- Fix select `:active` border agar konsisten
+- Border global untuk `.input`, `.select`, `.textarea` (1px base-300) dan `.checkbox` (2px base-300)
+- Focus state: primary border + ring glow (color-mix oklch)
+- Extensive **react-select** custom CSS styles (control, menu, options, multi-value) — konsisten dengan tema daisyUI
 
 ### Tema
 - **Light**: `emerald` (daisyUI)
@@ -73,6 +73,7 @@ toast notifications, dan debounced auto-search.
 
 ```
 gealin/
+├── DOKUMENTASI_TABEL.md              # Dokumentasi tabel database (referensi tambahan)
 ├── app/
 │   ├── Actions/Fortify/
 │   │   ├── CreateNewUser.php          # Validates & creates user (uses ProfileValidationRules + PasswordValidationRules)
@@ -152,8 +153,10 @@ gealin/
 │       ├── JenisSuratSeeder.php       # Seeds 13 jenis surat (SK-DOM, SKTM, SK-USAHA, etc.)
 │       └── PendudukSeeder.php         # Seeds 6 KK + penduduk + beberapa user warga
 ├── resources/
-│   ├── css/app.css                    # TailwindCSS + daisyUI + global form styles
-│   ├── views/pdf/surat.blade.php      # PDF template untuk cetak surat
+│   ├── css/app.css                    # TailwindCSS + daisyUI + global form styles + react-select styles
+│   ├── views/
+│   │   ├── app.blade.php             # Inertia root blade template
+│   │   └── pdf/surat.blade.php       # PDF template untuk cetak surat
 │   └── js/
 │       ├── app.tsx                    # Inertia entry + <Toaster />
 │       ├── ssr.tsx                    # SSR entry point
@@ -161,6 +164,8 @@ gealin/
 │       ├── hooks/
 │       │   └── use-appearance.ts     # Theme hook (light/dark/system)
 │       ├── pages/
+│       │   ├── dashboard.tsx          # Generic dashboard (starter kit remnant, tidak digunakan)
+│       │   ├── welcome.tsx            # Welcome page (starter kit remnant, tidak digunakan)
 │       │   ├── auth/login.tsx         # Login page (rendered at root /)
 │       │   ├── settings/              # Settings pages (profile, password, appearance, 2FA)
 │       │   ├── staf/
@@ -183,8 +188,8 @@ gealin/
 │       │   ├── StafLayout.tsx        # Sidebar + Navbar + flash toast listener
 │       │   └── WargaLayout.tsx       # Warga layout (simple)
 │       ├── lib/
-│       │   └── date.ts              # Date utilities: formatDate, parseDate, toDateString, formatRelativeTime (Indonesian locale)
-│       └── types/                    # PageProps interface
+│       │   └── date.ts              # Date utilities (Indonesian locale): formatDate, formatDateShort, formatDateNumeric, formatDateTime, formatDateWithDay, formatTime, formatRelativeTime, parseDate, toDateString
+│       └── types/                    # PageProps interface (auth.user, flash.success/error)
 ├── routes/
 │   ├── web.php                       # Staf routes (penduduk, kk, mutasi, surat, pengajuan, jenis-surat)
 │   ├── settings.php                  # Profile, password, appearance, 2FA
@@ -393,34 +398,34 @@ Staf:  staf@ardipura.go.id  / 123456  (role: staf)
 ### Web Routes (`routes/web.php`)
 ```
 GET  /                    → Inertia::render('auth/login')  [guest, root = login page]
-GET  /staf                → Inertia::render('staf/dashboard') [auth, staf]
-Resource /staf/penduduk   → PendudukController [auth, staf]
+GET  /staf                → StafDashboardController (invokable) [auth, verified, role:staf]
+Resource /staf/penduduk   → PendudukController [auth, verified, role:staf]
   GET    /staf/penduduk           → index (paginated, search, filter)
   POST   /staf/penduduk           → store
   PUT    /staf/penduduk/{id}      → update
   DELETE /staf/penduduk/{id}      → destroy
   POST   /staf/penduduk/reset-password → resetPassword (reset password penduduk/warga)
-Resource /staf/kartu-keluarga → KartuKeluargaController [auth, staf]
+Resource /staf/kartu-keluarga → KartuKeluargaController [auth, verified, role:staf]
   GET    /staf/kartu-keluarga           → index (paginated, search)
   POST   /staf/kartu-keluarga           → store
   PUT    /staf/kartu-keluarga/{id}      → update
   DELETE /staf/kartu-keluarga/{id}      → destroy
-Resource /staf/mutasi → MutasiPendudukController [auth, staf]
+Resource /staf/mutasi → MutasiPendudukController [auth, verified, role:staf]
   GET    /staf/mutasi           → index (paginated, search, filter)
   POST   /staf/mutasi           → store
   PUT    /staf/mutasi/{id}      → update
   DELETE /staf/mutasi/{id}      → destroy
-Resource /staf/jenis-surat → JenisSuratController [auth, staf]
+Resource /staf/jenis-surat → JenisSuratController [auth, verified, role:staf]
   GET    /staf/jenis-surat      → index (list, search, no pagination)
   POST   /staf/jenis-surat      → store
   PUT    /staf/jenis-surat/{id} → update
   DELETE /staf/jenis-surat/{id} → destroy
-Resource /staf/persyaratan-surat → PersyaratanSuratController [auth, staf]
+Resource /staf/persyaratan-surat → PersyaratanSuratController [auth, verified, role:staf]
   GET    /staf/persyaratan-surat           → index (list by jenis_surat)
   POST   /staf/persyaratan-surat           → store
   PUT    /staf/persyaratan-surat/{id}      → update
   DELETE /staf/persyaratan-surat/{id}      → destroy
-Resource /staf/surat → SuratController [auth, staf]
+Resource /staf/surat → SuratController [auth, verified, role:staf]
   GET    /staf/surat           → index (paginated, search, filter)
   POST   /staf/surat           → store
   PUT    /staf/surat/{id}      → update
@@ -429,12 +434,13 @@ Resource /staf/surat → SuratController [auth, staf]
   POST   /staf/surat/{id}/batalkan → batalkan (set status → dibatalkan)
   GET    /staf/surat/{id}/cetak      → cetak PDF (SuratCetakController)
   GET    /staf/surat/{id}/preview    → preview PDF (SuratCetakController)
-Resource /staf/pengajuan → PengajuanSuratController [auth, staf]
+Resource /staf/pengajuan → PengajuanSuratController [auth, verified, role:staf]
   GET    /staf/pengajuan        → index (paginated, search, filter)
   POST   /staf/pengajuan        → store
   PUT    /staf/pengajuan/{id}   → update
   DELETE /staf/pengajuan/{id}   → destroy
   PATCH  /staf/pengajuan/{id}/status → updateStatus
+GET    /staf/laporan              → LaporanController (invokable) [auth, verified, role:staf]
 ```
 
 ### Settings Routes (`routes/settings.php`)
@@ -451,13 +457,13 @@ GET    /settings/two-factor   → TwoFactorAuthenticationController@show [auth, 
 
 ### Warga Routes (`routes/web.php`)
 ```
-GET  /warga                    → WargaDashboardController [auth, warga]
-GET  /warga/pengajuan         → create form pengajuan [auth, warga]
-POST /warga/pengajuan         → store pengajuan + upload lampiran [auth, warga]
-GET  /warga/riwayat           → list riwayat pengajuan [auth, warga]
-DELETE /warga/pengajuan/{id}  → destroy (hanya jika status: menunggu/ditolak) [auth, warga]
-GET  /warga/surat/{pengajuanId}/cetak → cetak PDF (stream) [auth, warga]
-GET  /warga/surat/{pengajuanId}/preview → preview HTML [auth, warga]
+GET  /warga                    → WargaDashboardController [auth, verified, role:warga]
+GET  /warga/pengajuan         → create form pengajuan [auth, verified, role:warga]
+POST /warga/pengajuan         → store pengajuan + upload lampiran [auth, verified, role:warga]
+GET  /warga/riwayat           → list riwayat pengajuan [auth, verified, role:warga]
+DELETE /warga/pengajuan/{id}  → destroy (hanya jika status: menunggu/ditolak) [auth, verified, role:warga]
+GET  /warga/surat/{pengajuanId}/cetak → cetak PDF (stream) [auth, verified, role:warga]
+GET  /warga/surat/{pengajuanId}/preview → preview HTML [auth, verified, role:warga]
 ```
 
 ### Fortify Auth Views (defined in `FortifyServiceProvider`)
@@ -853,6 +859,18 @@ npm run types
 - ~~**Cetak Surat** — generate PDF surat~~ ✅ Selesai (Session 5)
 - ~~**Laporan** — laporan kependudukan & surat~~ ✅ Selesai (Session 5)
 
+### ✅ Yang Sudah Selesai
+- ~~**CRUD Penduduk**~~ ✅ Selesai (Session 1-2)
+- ~~**CRUD Kartu Keluarga**~~ ✅ Selesai (Session 2)
+- ~~**Mutasi Penduduk**~~ ✅ Selesai (Session 3)
+- ~~**Jenis Surat + Persyaratan**~~ ✅ Selesai (Session 4)
+- ~~**Pengajuan Surat (Staf & Warga)**~~ ✅ Selesai (Session 5-6)
+- ~~**Cetak Surat**~~ ✅ Selesai (Session 5)
+- ~~**Laporan**~~ ✅ Selesai (Session 5)
+- ~~**Settings Pages**~~ ✅ Selesai (Session 5)
+- ~~**Postingan (Berita, Kegiatan, Pengumuman)**~~ ✅ Selesai (Session 10-11)
+- ~~**Halaman Publik Modern**~~ ✅ Selesai (Session 11)
+
 ### ❌ Yang Belum Ada
 - **Auth pages selain login** — register, forgot-password, reset-password, verify-email, two-factor-challenge, confirm-password (Fortify features enabled tapi view belum dibuat)
 
@@ -901,4 +919,42 @@ npm run types
     - Use `stream()` untuk preview di browser, bukan `download()` langsung
     - PDF view: `resources/views/pdf/surat.blade.php` dengan layout tabel
     - Relationship: `Surat` model punya `pengajuan()` (bukan `pengajuanSurat`)
+18. **Postingan (Berita/Kegiatan/dll)** — Satu tabel `postingan` dengan kolom `kategori`:
+    - Kategori: `berita`, `kegiatan`, `pengumuman`, `berita_video`, `artikel`
+    - Model: `App\Models\Postingan` — slug auto-generate, `published_at` auto-set saat publish
+    - Staf CRUD: `App\Http\Controllers\Staf\PostinganController` → route `staf.postingan.*`
+    - Toggle publish: `POST staf/postingan/{id}/toggle-publish` → `staf.postingan.toggle-publish`
+    - Gambar upload: disimpan di `storage/app/public/postingan/` → akses via `/storage/postingan/`
+    - Video: simpan URL YouTube/embed di kolom `video_url` (hanya untuk kategori `berita_video`)
+    - Publik Controller: `App\Http\Controllers\Publik\PostinganController`
+    - **Halaman Publik:**
+      - `GET /` → `publik.dashboard` (Beranda dengan hero, stats, dan grid berita)
+      - `GET /berita` → `publik.berita` (Semua postingan, filter search)
+      - `GET /pengumuman` → `publik.pengumuman` (Hanya kategori pengumuman)
+      - `GET /kegiatan` → `publik.kegiatan` (Hanya kategori kegiatan)
+      - `GET /informasi/{slug}` → `publik.postingan.show` (Detail berita + related posts)
+    - Field tambahan kegiatan: `tanggal_kegiatan` (date) + `lokasi` (string)
+    - Halaman staf: `resources/js/pages/staf/postingan/index.tsx`
+    - Halaman publik:
+      - `resources/js/pages/publik/dashboard.tsx` (Beranda)
+      - `resources/js/pages/publik/berita/index.tsx` (Berita/Pengumuman/Kegiatan)
+      - `resources/js/pages/publik/postingan/show.tsx` (Detail)
+
+19. **Halaman Publik Design System** — Navbar, Hero, Stats, Grid, Footer:
+    - **Navbar**: Sticky dengan glassmorphism (`bg-base-100/80 backdrop-blur-md`)
+    - **Logo**: Logo Kota Jayapura di kiri navbar (`/logo.png`), tinggi 40px (`h-10`)
+    - **Menu**: Beranda, Berita, Pengumuman, Kegiatan (dengan active state)
+    - **Active State**: `bg-primary text-primary-content` untuk menu aktif
+    - **Hero Section**: Gradient background, badge pulse, gradient text heading
+    - **Stats Cards**: 4 cards (Penduduk, Layanan, Akses 24/7, Gratis) dengan AOS animation
+    - **Grid Cards**: Hover effect (lift + shadow), image scale on hover
+    - **Footer**: 3 columns (Tentang, Menu Cepat, Kontak)
+    - **AOS Animation**: `fade-up`, `zoom-in` dengan delay staggered
+    - **APP_NAME**: Dari `.env`, ditampilkan di footer dan tempat lain via shared props Inertia
+
+20. **Logo Kota Jayapura**:
+    - **File**: `/public/logo.png`
+    - **Usage**: Navbar di semua halaman publik (`dashboard.tsx`, `berita/index.tsx`, `show.tsx`, `login.tsx`)
+    - **Style**: `h-10 w-auto` (tinggi 40px, lebar otomatis)
+    - **Link**: Kembali ke `/` (Beranda)
 

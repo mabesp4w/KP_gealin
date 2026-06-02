@@ -32,3 +32,14 @@ createInertiaApp({
 
 // This will set light / dark mode on load...
 initializeTheme();
+
+// Fix: Allow TinyMCE to receive focus inside native <dialog> (top layer).
+// Native <dialog> with showModal() traps focus and blocks focusin events
+// to elements outside the dialog. TinyMCE uses an iframe + aux containers
+// on document.body, so we stop propagation for TinyMCE-owned targets.
+document.addEventListener('focusin', (e) => {
+    const target = e.target as HTMLElement | null;
+    if (target?.closest('.tox-tinymce, .tox-tinymce-aux, .tox-dialog, .tox-dialog-wrap')) {
+        e.stopImmediatePropagation();
+    }
+});

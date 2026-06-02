@@ -14,7 +14,7 @@ interface TextareaProps extends Omit<TextareaHTMLAttributes<HTMLTextAreaElement>
 }
 
 const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
-    ({ label, altLabel, color, size, variant, error, className = '', ...props }, ref) => {
+    ({ label, altLabel, color, size, variant, error, className = '', value, ...props }, ref) => {
         const inputClasses = [
             'textarea',
             color && `textarea-${color}`,
@@ -35,7 +35,7 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
                         {altLabel && <span className="label-text-alt">{altLabel}</span>}
                     </label>
                 )}
-                <textarea ref={ref} className={inputClasses} {...props} />
+                <textarea ref={ref} className={inputClasses} value={value ?? ''} {...props} />
                 {error && (
                     <label className="label">
                         <span className="label-text-alt text-error">{error}</span>

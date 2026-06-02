@@ -3,6 +3,8 @@
 @source '../views';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 
+@plugin "@tailwindcss/typography";
+
 @plugin "daisyui" {
     themes: emerald --default, forest --prefersdark;
 }
@@ -135,4 +137,16 @@ select.select:active,
 .react-select__multi-value__remove:hover {
     background-color: color-mix(in oklch, var(--color-error) 12%, transparent) !important;
     color: var(--color-error) !important;
+}
+
+/* ── TinyMCE inside native <dialog> fix ──────────────────── */
+/* The aux container (menus, dropdowns, color-pickers) is appended to
+   document.body, which sits BELOW the dialog's top-layer. Promote it. */
+.tox-tinymce-aux {
+    z-index: 99999 !important;
+}
+
+/* Silver-oxide dialog overlay must also sit above the dialog top-layer */
+.tox-dialog-wrap {
+    z-index: 99999 !important;
 }

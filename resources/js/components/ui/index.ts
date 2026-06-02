@@ -52,3 +52,4 @@ export { Rating, type RatingProps } from './Rating';
 // ── Third-party Integrations ─────────────────────────────
 export { DatePickerInput, type DatePickerInputProps } from './DatePickerInput';
 export { Lightbox, ImageGallery, type LightboxProps, type ImageGalleryProps } from './Lightbox';
+export { RichTextEditor, type RichTextEditorProps } from './RichTextEditor';

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Publik\PostinganController as PublikPostinganController;
 use App\Http\Controllers\Staf\DashboardController as StafDashboardController;
 use App\Http\Controllers\Staf\JenisSuratController;
 use App\Http\Controllers\Staf\KartuKeluargaController;
@@ -8,25 +9,40 @@ use App\Http\Controllers\Staf\MutasiPendudukController;
 use App\Http\Controllers\Staf\PengajuanSuratController as StafPengajuanSuratController;
 use App\Http\Controllers\Staf\PendudukController;
 use App\Http\Controllers\Staf\PersyaratanSuratController;
+use App\Http\Controllers\Staf\ArtikelController;
+use App\Http\Controllers\Staf\BeritaController;
+use App\Http\Controllers\Staf\BeritaVideoController;
+use App\Http\Controllers\Staf\KegiatanController;
+use App\Http\Controllers\Staf\PengumumanController;
 use App\Http\Controllers\Staf\SuratController;
 use App\Http\Controllers\Staf\SuratCetakController;
 use App\Http\Controllers\Warga\DashboardController as WargaDashboardController;
 use App\Http\Controllers\Warga\PengajuanSuratController as WargaPengajuanSuratController;
 use App\Http\Controllers\Warga\RiwayatController;
 use App\Http\Controllers\Warga\SuratCetakController as WargaSuratCetakController;
-use App\Http\Middleware\RedirectByRole;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function () {
-    if (auth()->check()) {
-        return redirect(RedirectByRole::homeFor(auth()->user()->role));
-    }
+Route::get('/', [PublikPostinganController::class, 'dashboard'])->name('home');
 
-    return Inertia::render('auth/login', [
-        'status' => session('status'),
-    ]);
-})->name('home');
+// ── Publik Routes (tanpa login) ─────────────────────────────
+Route::get('/berita', [PublikPostinganController::class, 'berita'])->name('publik.berita');
+Route::get('/artikel', [PublikPostinganController::class, 'artikel'])->name('publik.artikel');
+Route::get('/pengumuman', [PublikPostinganController::class, 'pengumuman'])->name('publik.pengumuman');
+Route::get('/kegiatan', [PublikPostinganController::class, 'kegiatan'])->name('publik.kegiatan');
+Route::get('/berita-video', [PublikPostinganController::class, 'beritaVideo'])->name('publik.berita-video');
+
+// ── Profil Pages ───────────────────────────────────────────
+Route::prefix('profil')->name('publik.profil.')->group(function () {
+    Route::get('/visi-misi', [PublikPostinganController::class, 'visiMisi'])->name('visi-misi');
+    Route::get('/struktur-organisasi', [PublikPostinganController::class, 'strukturOrganisasi'])->name('struktur-organisasi');
+    Route::get('/peta', [PublikPostinganController::class, 'peta'])->name('peta');
+});
+
+Route::prefix('informasi')->name('publik.')->group(function () {
+    Route::get('/', [PublikPostinganController::class, 'index'])->name('postingan.index');
+    Route::get('/{slug}', [PublikPostinganController::class, 'show'])->name('postingan.show');
+});
 
 // ── Staf Routes ────────────────────────────────────────────
 Route::prefix('staf')->middleware(['auth', 'verified', 'role:staf'])->group(function () {
@@ -86,6 +102,61 @@ Route::prefix('staf')->middleware(['auth', 'verified', 'role:staf'])->group(func
 
     // Laporan
     Route::get('laporan', LaporanController::class)->name('staf.laporan');
+
+    // ── Berita ────────────────────────────────────────
+    Route::prefix('berita')->name('staf.berita.')->group(function () {
+        Route::get('/', [BeritaController::class, 'index'])->name('index');
+        Route::get('create', [BeritaController::class, 'create'])->name('create');
+        Route::post('/', [BeritaController::class, 'store'])->name('store');
+        Route::get('{postingan}/edit', [BeritaController::class, 'edit'])->name('edit');
+        Route::put('{postingan}', [BeritaController::class, 'update'])->name('update');
+        Route::delete('{postingan}', [BeritaController::class, 'destroy'])->name('destroy');
+        Route::post('{postingan}/toggle-publish', [BeritaController::class, 'togglePublish'])->name('toggle-publish');
+    });
+
+    // ── Kegiatan ──────────────────────────────────────
+    Route::prefix('kegiatan')->name('staf.kegiatan.')->group(function () {
+        Route::get('/', [KegiatanController::class, 'index'])->name('index');
+        Route::get('create', [KegiatanController::class, 'create'])->name('create');
+        Route::post('/', [KegiatanController::class, 'store'])->name('store');
+        Route::get('{postingan}/edit', [KegiatanController::class, 'edit'])->name('edit');
+        Route::put('{postingan}', [KegiatanController::class, 'update'])->name('update');
+        Route::delete('{postingan}', [KegiatanController::class, 'destroy'])->name('destroy');
+        Route::post('{postingan}/toggle-publish', [KegiatanController::class, 'togglePublish'])->name('toggle-publish');
+    });
+
+    // ── Pengumuman ────────────────────────────────────
+    Route::prefix('pengumuman')->name('staf.pengumuman.')->group(function () {
+        Route::get('/', [PengumumanController::class, 'index'])->name('index');
+        Route::get('create', [PengumumanController::class, 'create'])->name('create');
+        Route::post('/', [PengumumanController::class, 'store'])->name('store');
+        Route::get('{postingan}/edit', [PengumumanController::class, 'edit'])->name('edit');
+        Route::put('{postingan}', [PengumumanController::class, 'update'])->name('update');
+        Route::delete('{postingan}', [PengumumanController::class, 'destroy'])->name('destroy');
+        Route::post('{postingan}/toggle-publish', [PengumumanController::class, 'togglePublish'])->name('toggle-publish');
+    });
+
+    // ── Berita Video ──────────────────────────────────
+    Route::prefix('berita-video')->name('staf.berita_video.')->group(function () {
+        Route::get('/', [BeritaVideoController::class, 'index'])->name('index');
+        Route::get('create', [BeritaVideoController::class, 'create'])->name('create');
+        Route::post('/', [BeritaVideoController::class, 'store'])->name('store');
+        Route::get('{postingan}/edit', [BeritaVideoController::class, 'edit'])->name('edit');
+        Route::put('{postingan}', [BeritaVideoController::class, 'update'])->name('update');
+        Route::delete('{postingan}', [BeritaVideoController::class, 'destroy'])->name('destroy');
+        Route::post('{postingan}/toggle-publish', [BeritaVideoController::class, 'togglePublish'])->name('toggle-publish');
+    });
+
+    // ── Artikel ───────────────────────────────────────
+    Route::prefix('artikel')->name('staf.artikel.')->group(function () {
+        Route::get('/', [ArtikelController::class, 'index'])->name('index');
+        Route::get('create', [ArtikelController::class, 'create'])->name('create');
+        Route::post('/', [ArtikelController::class, 'store'])->name('store');
+        Route::get('{postingan}/edit', [ArtikelController::class, 'edit'])->name('edit');
+        Route::put('{postingan}', [ArtikelController::class, 'update'])->name('update');
+        Route::delete('{postingan}', [ArtikelController::class, 'destroy'])->name('destroy');
+        Route::post('{postingan}/toggle-publish', [ArtikelController::class, 'togglePublish'])->name('toggle-publish');
+    });
 });
 
 // ── Warga Routes ────────────────────────────────────────────
@@ -109,4 +180,4 @@ Route::prefix('warga')->middleware(['auth', 'verified', 'role:warga'])->group(fu
     Route::delete('/pengajuan/{id}', [WargaPengajuanSuratController::class, 'destroy'])->name('warga.pengajuan.destroy');
 });
 
-require __DIR__.'/settings.php';
+require __DIR__ . '/settings.php';

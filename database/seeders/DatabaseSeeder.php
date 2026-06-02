@@ -26,5 +26,8 @@ class DatabaseSeeder extends Seeder
 
         // Data Penduduk Kelurahan Ardipura
         $this->call(PendudukSeeder::class);
+
+        // Contoh postingan (berita, kegiatan, pengumuman, berita_video, artikel)
+        $this->call(PostinganSeeder::class);
     }
 }

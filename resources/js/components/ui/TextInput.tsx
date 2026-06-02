@@ -27,6 +27,7 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
             topRightLabel,
             bottomRightLabel,
             className = '',
+            value,
             ...props
         },
         ref,
@@ -53,7 +54,7 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
                         )}
                     </label>
                 )}
-                <input ref={ref} className={inputClasses} {...props} />
+                <input ref={ref} className={inputClasses} value={value ?? ''} {...props} />
                 {(error || altLabel || bottomRightLabel) && (
                     <label className="label">
                         {(error || altLabel) && (
