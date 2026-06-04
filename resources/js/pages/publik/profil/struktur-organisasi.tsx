@@ -24,13 +24,13 @@ export default function StrukturOrganisasi() {
                         </p>
                     </div>
 
-                    <div data-aos="fade-up" className="card bg-base-100 shadow-lg">
+                    <div data-aos="fade-up" className="">
                         <div className="card-body p-8">
-                            <div className="text-center text-base-content/60 py-8">
-                                <div className="text-6xl mb-4">📊</div>
-                                <p className="text-lg">Struktur organisasi akan segera ditampilkan.</p>
-                                <p className="text-sm mt-2">Silakan hubungi kelurahan untuk informasi lebih lanjut.</p>
-                            </div>
+                            <img
+                                src="/images/struktur-organisasi.png"
+                                alt="Struktur Organisasi Kelurahan Ardipura"
+                                className="w-full h-auto rounded-lg"
+                            />
                         </div>
                     </div>
 
