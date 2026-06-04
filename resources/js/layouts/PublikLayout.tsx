@@ -173,7 +173,6 @@ export default function PublikLayout({ children, title }: PublikLayoutProps) {
                                 <ul tabIndex={0} className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
                                     <li className="menu-title">{user.name}</li>
                                     <li><Link href={`/${user.role}`}>Dashboard</Link></li>
-                                    <li><Link href="/settings/profile">Pengaturan</Link></li>
                                     <li><Link href="/logout" method="post" as="button" className="text-error">Keluar</Link></li>
                                 </ul>
                             </div>

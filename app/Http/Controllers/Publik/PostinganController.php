@@ -95,6 +95,8 @@ class PostinganController extends Controller
 
         return Inertia::render('publik/berita/index', [
             'appName' => Config::get('app.name'),
+            'pageTitle' => 'Pengumuman',
+            'pageIcon' => '📢',
             'postingan' => Postingan::with('user:id,name')
                 ->published()
                 ->kategori('pengumuman')
@@ -120,6 +122,8 @@ class PostinganController extends Controller
 
         return Inertia::render('publik/berita/index', [
             'appName' => Config::get('app.name'),
+            'pageTitle' => 'Kegiatan',
+            'pageIcon' => '🎯',
             'postingan' => Postingan::with('user:id,name')
                 ->published()
                 ->kategori('kegiatan')

@@ -31,6 +31,7 @@ interface PostinganItem {
     ringkasan: string | null;
     kategori: string;
     gambar: string | null;
+    video_url: string | null;
     published_at: string | null;
     user?: User | null;
 }
@@ -42,6 +43,7 @@ interface Props {
     };
     pageTitle?: string;
     pageIcon?: string;
+    pageDescription?: string;
 }
 
 function formatDateId(dateStr: string | null | undefined) {
@@ -55,7 +57,25 @@ function formatDateId(dateStr: string | null | undefined) {
     });
 }
 
-export default function PublikBerita({ postingan, filters, pageTitle = 'Berita', pageIcon = '📰' }: Props) {
+/**
+ * Ekstrak YouTube video ID dari berbagai format URL YouTube,
+ * lalu kembalikan URL thumbnail-nya.
+ */
+function getYoutubeThumbnail(url: string | null | undefined): string | null {
+    if (!url) return null;
+    const patterns = [
+        /(?:youtube\.com\/watch\?.*v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/,
+    ];
+    for (const pattern of patterns) {
+        const match = url.match(pattern);
+        if (match?.[1]) {
+            return `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg`;
+        }
+    }
+    return null;
+}
+
+export default function PublikBerita({ postingan, filters, pageTitle = 'Berita', pageIcon = '📰', pageDescription }: Props) {
     const { name } = usePage().props;
 
     useEffect(() => {
@@ -103,7 +123,7 @@ export default function PublikBerita({ postingan, filters, pageTitle = 'Berita',
                             <div className="text-5xl mb-4">{pageIcon}</div>
                             <h1 className="text-3xl sm:text-4xl font-bold mb-4">{pageTitle}</h1>
                             <p className="text-base-content/70">
-                                Informasi terbaru seputar kegiatan dan perkembangan di Kelurahan Ardipura
+                                {pageDescription ?? `Informasi terbaru seputar ${pageTitle.toLowerCase()} di Kelurahan Ardipura`}
                             </p>
                         </div>
                     </div>
@@ -160,9 +180,25 @@ export default function PublikBerita({ postingan, filters, pageTitle = 'Berita',
                                                             alt={p.judul}
                                                             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                                                         />
+                                                    ) : getYoutubeThumbnail(p.video_url) ? (
+                                                        <>
+                                                            <img
+                                                                src={getYoutubeThumbnail(p.video_url)!}
+                                                                alt={p.judul}
+                                                                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                                            />
+                                                            {/* Play button overlay */}
+                                                            <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors">
+                                                                <div className="w-14 h-14 rounded-full bg-red-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-white ml-1" viewBox="0 0 24 24" fill="currentColor">
+                                                                        <path d="M8 5v14l11-7z" />
+                                                                    </svg>
+                                                                </div>
+                                                            </div>
+                                                        </>
                                                     ) : (
                                                         <div className="h-full w-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
-                                                            <span className="text-5xl">📰</span>
+                                                            <span className="text-5xl">{pageIcon}</span>
                                                         </div>
                                                     )}
                                                 </figure>
