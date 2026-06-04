@@ -233,15 +233,15 @@ export default function PendudukIndex({ penduduk, filters, kartuKeluarga }: Prop
         setIsSubmitting(true);
         const url = editingItem ? `/staf/penduduk/${editingItem.id}` : '/staf/penduduk';
 
-        // Only include user creation fields when creating new penduduk
+        // Only include user creation fields when penduduk already has account
         const submitData: any = { ...values };
-        if (editingItem) {
-            // Remove user fields when editing
+        if (editingItem && editingItem.user_id) {
+            // Already has account, remove user fields
             delete submitData.create_user;
             delete submitData.user_email;
             delete submitData.user_password;
         } else {
-            // Include create_user flag for new penduduk
+            // New penduduk or editing penduduk without account
             submitData.create_user = createUser;
         }
 
@@ -588,8 +588,8 @@ export default function PendudukIndex({ penduduk, filters, kartuKeluarga }: Prop
                                 </div>
                             </div>
 
-                            {/* Akun Login - hanya saat tambah baru */}
-                            {!editingItem && (
+                            {/* Akun Login - saat tambah baru atau edit penduduk yang belum punya akun */}
+                            {(!editingItem || !editingItem.user_id) && (
                                 <>
                                     <div className="divider my-0" />
                                     <div>

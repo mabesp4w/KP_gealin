@@ -110,7 +110,35 @@ class PendudukController extends Controller
     {
         $validated = $request->validate($this->rules($penduduk->id));
 
-        $penduduk->update($validated);
+        // Extract user creation fields
+        $createUser = $request->boolean('create_user', false);
+        $userEmail = $request->input('user_email');
+        $userPassword = $request->input('user_password');
+
+        // Remove user fields from validated data
+        unset($validated['create_user'], $validated['user_email'], $validated['user_password']);
+
+        DB::beginTransaction();
+        try {
+            $penduduk->update($validated);
+
+            // Create user account if requested and penduduk doesn't have one yet
+            if ($createUser && $userEmail && $userPassword && !$penduduk->user_id) {
+                $user = User::create([
+                    'name' => $validated['nama_lengkap'],
+                    'email' => $userEmail,
+                    'password' => Hash::make($userPassword),
+                    'role' => 'warga',
+                ]);
+
+                $penduduk->update(['user_id' => $user->id]);
+            }
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Gagal memperbarui data: ' . $e->getMessage());
+        }
 
         return to_route('staf.penduduk.index')->with('success', 'Data penduduk berhasil diperbarui.');
     }
