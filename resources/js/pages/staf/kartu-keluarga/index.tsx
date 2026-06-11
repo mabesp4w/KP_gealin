@@ -295,6 +295,23 @@ export default function KartuKeluargaIndex({ kartuKeluarga, filters }: Props) {
                                         </TableCell>
                                         <TableCell className="text-center">
                                             <div className="flex justify-center gap-1">
+                                                <Tooltip content="Cetak PDF">
+                                                    <a
+                                                        href={`/staf/kartu-keluarga/${item.id}/cetak`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                    >
+                                                        <Button
+                                                            size="sm"
+                                                            color="success"
+                                                            variant="soft"
+                                                            circle
+                                                            title="Cetak PDF"
+                                                        >
+                                                            🖨️
+                                                        </Button>
+                                                    </a>
+                                                </Tooltip>
                                                 <Tooltip content="Detail">
                                                     <Button
                                                         size="sm"

@@ -4,6 +4,7 @@ use App\Http\Controllers\Publik\PostinganController as PublikPostinganController
 use App\Http\Controllers\Staf\DashboardController as StafDashboardController;
 use App\Http\Controllers\Staf\JenisSuratController;
 use App\Http\Controllers\Staf\KartuKeluargaController;
+use App\Http\Controllers\Staf\KartuKeluargaCetakController;
 use App\Http\Controllers\Staf\LaporanController;
 use App\Http\Controllers\Staf\MutasiPendudukController;
 use App\Http\Controllers\Staf\PengajuanSuratController as StafPengajuanSuratController;
@@ -59,6 +60,11 @@ Route::prefix('staf')->middleware(['auth', 'verified', 'role:staf'])->group(func
     Route::resource('kartu-keluarga', KartuKeluargaController::class)
         ->except(['create', 'show', 'edit'])
         ->names('staf.kartu-keluarga');
+
+    Route::get('kartu-keluarga/{kartuKeluarga}/cetak', [KartuKeluargaCetakController::class, 'cetak'])
+        ->name('staf.kartu-keluarga.cetak');
+    Route::get('kartu-keluarga/{kartuKeluarga}/preview', [KartuKeluargaCetakController::class, 'preview'])
+        ->name('staf.kartu-keluarga.preview');
 
     Route::resource('mutasi', MutasiPendudukController::class)
         ->except(['create', 'show', 'edit'])
