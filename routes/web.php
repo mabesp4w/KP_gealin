@@ -17,6 +17,7 @@ use App\Http\Controllers\Staf\KegiatanController;
 use App\Http\Controllers\Staf\PengumumanController;
 use App\Http\Controllers\Staf\SuratController;
 use App\Http\Controllers\Staf\SuratCetakController;
+use App\Http\Controllers\Settings\KelurahanController;
 use App\Http\Controllers\Warga\DashboardController as WargaDashboardController;
 use App\Http\Controllers\Warga\PengajuanSuratController as WargaPengajuanSuratController;
 use App\Http\Controllers\Warga\RiwayatController;
@@ -162,6 +163,12 @@ Route::prefix('staf')->middleware(['auth', 'verified', 'role:staf'])->group(func
         Route::put('{postingan}', [ArtikelController::class, 'update'])->name('update');
         Route::delete('{postingan}', [ArtikelController::class, 'destroy'])->name('destroy');
         Route::post('{postingan}/toggle-publish', [ArtikelController::class, 'togglePublish'])->name('toggle-publish');
+    });
+
+    // ── Settings Kelurahan ─────────────────────────────────
+    Route::prefix('settings')->name('staf.settings.')->group(function () {
+        Route::get('/kelurahan', [KelurahanController::class, 'edit'])->name('kelurahan');
+        Route::post('/kelurahan', [KelurahanController::class, 'update'])->name('kelurahan.update');
     });
 });
 

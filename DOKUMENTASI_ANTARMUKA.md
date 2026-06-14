@@ -59,13 +59,15 @@
 | 30 | Kata Sandi | `/settings/password` |
 | 31 | Tampilan | `/settings/appearance` |
 | 32 | Autentikasi Dua Faktor | `/settings/two-factor` |
+| 33 | Data Kelurahan | `/settings/kelurahan` |
 
 ### Halaman Cetak
 
 | No | Nama Halaman | Alamat |
 |----|--------------|--------|
-| 33 | Cetak Surat oleh Staf | `/staf/surat/{id}/cetak` |
-| 34 | Cetak Surat oleh Warga | `/warga/surat/{pengajuanId}/cetak` |
+| 34 | Data Kelurahan | `/settings/kelurahan` |
+| 35 | Cetak Surat oleh Staf | `/staf/surat/{id}/cetak` |
+| 36 | Cetak Surat oleh Warga | `/warga/surat/{pengajuanId}/cetak` |
 
 ---
 
@@ -424,7 +426,19 @@ Halaman ini menyediakan fitur keamanan tambahan berupa verifikasi dua langkah. A
 
 ---
 
-## 31. Cetak Surat
+## 31. Data Kelurahan
+
+Halaman ini digunakan oleh staf untuk mengelola data profil kelurahan yang akan digunakan pada surat-surat resmi. Data yang dapat diubah meliputi:
+
+- **Identitas Kelurahan**: Nama kelurahan, alamat lengkap, kelurahan, kecamatan, kota, provinsi, kode pos, telepon, email, dan website.
+- **Data Lurah**: Nama lurah, NIP lurah, dan jabatan lurah.
+- **Logo & Tanda Tangan**: Unggah logo kelurahan dan gambar tanda tangan lurah. Logo akan tampil pada kop surat, sedangkan tanda tangan akan muncul pada bagian penandatangan surat resmi.
+
+Data yang disimpan di halaman ini akan digunakan secara otomatis pada cetak surat dan cetak kartu keluarga.
+
+---
+
+## 32. Cetak Surat
 
 Halaman cetak surat menghasilkan dokumen surat resmi dalam bentuk PDF yang siap dicetak. Halaman ini dapat diakses oleh staf melalui halaman surat (tombol cetak pada surat berstatus diterbitkan) maupun oleh warga melalui halaman riwayat pengajuan (untuk surat yang sudah selesai).
 

@@ -124,13 +124,13 @@
 <body>
     <div class="kop">
         @if(file_exists($logoPath))
-        <img src="{{ $logoPath }}" alt="Logo Pemerintah Kota Jayapura" class="kop-logo">
+        <img src="{{ $logoPath }}" alt="Logo {{ $kelurahan->kota ?? 'Pemerintah Kota Jayapura' }}" class="kop-logo">
         @endif
         <div class="kop-text">
-            <h1>Pemerintah Kota Jayapura</h1>
-            <h2>Kelurahan Ardipura</h2>
-            <p>Jl. Dokter Soetomo No. 1, Jayapura Selatan</p>
-            <p>Kota Jayapura, Papua</p>
+            <h1>Pemerintah {{ $kelurahan->kota ?? 'Kota Jayapura' }}</h1>
+            <h2>{{ $kelurahan->nama_kelurahan ?? 'Kelurahan Ardipura' }}</h2>
+            <p>{{ $kelurahan->alamat ?? 'Jl. Dokter Soetomo No. 1, Jayapura Selatan' }}</p>
+            <p>{{ $kelurahan->kota ?? 'Kota Jayapura' }}, {{ $kelurahan->provinsi ?? 'Papua' }}</p>
         </div>
     </div>
 
@@ -203,16 +203,16 @@
 
     <div class="ttd">
         <p>{{ \Carbon\Carbon::parse($surat->tanggal_surat)->locale('id')->translatedFormat('d F Y') }}</p>
-        <p>Lurah Ardipura</p>
+        <p>{{ $kelurahan->jabatan_lurah ?? 'Lurah ' . ($kelurahan->nama_kelurahan ?? 'Ardipura') }}</p>
 
-        <div class="ttd-space"></div>
+        <div class="ttd-space">
+            @if(!empty($kelurahan->tanda_tangan) && file_exists(public_path('storage/' . $kelurahan->tanda_tangan)))
+            <img src="{{ public_path('storage/' . $kelurahan->tanda_tangan) }}" alt="Tanda Tangan" style="height: 60px; width: auto;">
+            @endif
+        </div>
 
-        <p><strong>PHILIPUS WAMEA</strong></p>
-        @if($surat->jabatan_penandatangan)
-        <p>{{ $surat->jabatan_penandatangan }}</p>
-        @else
-        <p>Pembina Utama Muda</p>
-        @endif
+        <p><strong>{{ strtoupper($kelurahan->nama_lurah ?? 'PHILIPUS WAMEA') }}</strong></p>
+        <p>{{ $kelurahan->nip_lurah ?? '' }}</p>
     </div>
 </body>
 </html>

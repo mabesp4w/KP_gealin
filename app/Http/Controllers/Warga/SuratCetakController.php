@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Warga;
 
 use App\Http\Controllers\Controller;
+use App\Models\Kelurahan;
 use App\Models\PengajuanSurat;
 use App\Models\Surat;
 use Illuminate\Http\Request;
@@ -34,10 +35,12 @@ class SuratCetakController extends Controller
             $surat->save();
         }
 
-        // Path logo untuk dompdf (harus full file system path)
-        $logoPath = public_path('logo.png');
+        $kelurahan = Kelurahan::first() ?? new Kelurahan();
+        $logoPath = $kelurahan->logo && file_exists(public_path('storage/' . $kelurahan->logo))
+            ? public_path('storage/' . $kelurahan->logo)
+            : public_path('logo.png');
 
-        $pdf = PDF::loadView('pdf.surat', compact('surat', 'logoPath'));
+        $pdf = PDF::loadView('pdf.surat', compact('surat', 'kelurahan', 'logoPath'));
 
         $filename = "surat-{$surat->jenisSurat->kode}-{$surat->penduduk->nama_lengkap}.pdf";
 
@@ -61,9 +64,12 @@ class SuratCetakController extends Controller
 
         $surat->load(['penduduk', 'jenisSurat', 'pengajuan']);
 
-        $logoPath = public_path('logo.png');
+        $kelurahan = Kelurahan::first() ?? new Kelurahan();
+        $logoPath = $kelurahan->logo && file_exists(public_path('storage/' . $kelurahan->logo))
+            ? public_path('storage/' . $kelurahan->logo)
+            : public_path('logo.png');
 
-        return view('pdf.surat', compact('surat', 'logoPath'));
+        return view('pdf.surat', compact('surat', 'kelurahan', 'logoPath'));
     }
 
     private function generateNomorSurat(Surat $surat): string

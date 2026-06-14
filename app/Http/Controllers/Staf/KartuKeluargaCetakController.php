@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Staf;
 
 use App\Http\Controllers\Controller;
 use App\Models\KartuKeluarga;
+use App\Models\Kelurahan;
 use PDF;
 
 class KartuKeluargaCetakController extends Controller
@@ -17,11 +18,15 @@ class KartuKeluargaCetakController extends Controller
             ->first()
             ?->nama_lengkap ?? '-';
 
-        $logoPath = public_path('logo.png');
+        $kelurahan = Kelurahan::first() ?? new Kelurahan();
+        $logoPath = $kelurahan->logo && file_exists(public_path('storage/' . $kelurahan->logo))
+            ? public_path('storage/' . $kelurahan->logo)
+            : public_path('logo.png');
 
         $pdf = PDF::loadView('pdf.kartu-keluarga', [
             'kk' => $kartuKeluarga,
             'kepalaKeluarga' => $kepalaKeluarga,
+            'kelurahan' => $kelurahan,
             'logoPath' => $logoPath,
         ]);
 
@@ -39,11 +44,15 @@ class KartuKeluargaCetakController extends Controller
             ->first()
             ?->nama_lengkap ?? '-';
 
-        $logoPath = public_path('logo.png');
+        $kelurahan = Kelurahan::first() ?? new Kelurahan();
+        $logoPath = $kelurahan->logo && file_exists(public_path('storage/' . $kelurahan->logo))
+            ? public_path('storage/' . $kelurahan->logo)
+            : public_path('logo.png');
 
         return view('pdf.kartu-keluarga', [
             'kk' => $kartuKeluarga,
             'kepalaKeluarga' => $kepalaKeluarga,
+            'kelurahan' => $kelurahan,
             'logoPath' => $logoPath,
         ]);
     }
