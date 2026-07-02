@@ -61,6 +61,39 @@ function formatDateId(dateStr: string | null | undefined) {
     });
 }
 
+function AutoCarousel({ images }: { images: string[] }) {
+    const [current, setCurrent] = useState(0);
+    const len = images.length;
+
+    useEffect(() => {
+        const timer = setInterval(() => setCurrent((p) => (p + 1) % len), 4000);
+        return () => clearInterval(timer);
+    }, [len]);
+
+    return (
+        <div className="relative w-full rounded-2xl shadow-2xl overflow-hidden" style={{ aspectRatio: '16/9' }}>
+            {images.map((src, i) => (
+                <img
+                    key={src}
+                    src={src}
+                    alt={`Kantor Kelurahan Ardipura ${i + 1}`}
+                    className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
+                    style={{ opacity: i === current ? 1 : 0 }}
+                />
+            ))}
+            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+                {images.map((_, i) => (
+                    <button
+                        key={i}
+                        onClick={() => setCurrent(i)}
+                        className={`w-2.5 h-2.5 rounded-full transition-all ${i === current ? 'bg-white scale-125' : 'bg-white/50'}`}
+                    />
+                ))}
+            </div>
+        </div>
+    );
+}
+
 function StatCard({ number, label, icon }: { number: string; label: string; icon: string }) {
     return (
         <div
@@ -163,33 +196,38 @@ export default function PublikDashboard({
                     <div className="absolute bottom-0 left-0 w-72 h-72 bg-secondary/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
 
                     <div className="relative max-w-6xl mx-auto px-4 py-16 sm:py-24">
-                        <div
-                            data-aos="fade-up"
-                            data-aos-duration="800"
-                            className="text-center max-w-3xl mx-auto"
-                        >
-                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
-                                <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                                Sistem Informasi Kependudukan
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                            <div
+                                data-aos="fade-up"
+                                data-aos-duration="800"
+                            >
+                                <h1 className="text-3xl sm:text-3xl lg:text-4xl font-bold mb-6 leading-tight">
+                                    <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                                        {name}
+                                    </span>
+                                </h1>
+                                <p className="text-lg sm:text-xl text-base-content/70 mb-8 leading-relaxed">
+                                    Aplikasi kependudukan berbasis web untuk Kelurahan Ardipura.
+                                    Akses informasi kependudukan, layanan surat, dan berita terkini
+                                    dalam satu platform terintegrasi.
+                                </p>
+                                <div className="flex flex-col sm:flex-row gap-4">
+                                    <Link href="/login" className="btn btn-primary btn-lg shadow-lg shadow-primary/25">
+                                        Mulai Sekarang
+                                    </Link>
+                                    <Link href="/#informasi" className="btn btn-outline btn-lg">
+                                        Lihat Informasi
+                                    </Link>
+                                </div>
                             </div>
-                            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-                                Selamat Datang di{' '}
-                                <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                                    {name}
-                                </span>
-                            </h1>
-                            <p className="text-lg sm:text-xl text-base-content/70 mb-8 leading-relaxed">
-                                Aplikasi kependudukan berbasis web untuk Kelurahan Ardipura.
-                                Akses informasi kependudukan, layanan surat, dan berita terkini
-                                dalam satu platform terintegrasi.
-                            </p>
-                            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                                <Link href="/login" className="btn btn-primary btn-lg shadow-lg shadow-primary/25">
-                                    Mulai Sekarang
-                                </Link>
-                                <Link href="/#informasi" className="btn btn-outline btn-lg">
-                                    Lihat Informasi
-                                </Link>
+                            <div
+                                data-aos="fade-up"
+                                data-aos-duration="800"
+                                data-aos-delay="200"
+                                className="relative"
+                            >
+                                <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-secondary/20 rounded-2xl blur-3xl" />
+                                <AutoCarousel images={['/images/kantor1.jpeg', '/images/kantor2.jpeg']} />
                             </div>
                         </div>
                     </div>

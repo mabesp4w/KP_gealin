@@ -7,6 +7,11 @@ export default function Welcome({ canRegister }: { canRegister: boolean }) {
             <div className="hero min-h-screen bg-base-200">
                 <div className="hero-content text-center">
                     <div className="max-w-2xl">
+                        <img
+                            src="/images/kantor1.jpeg"
+                            alt="Kantor Kelurahan"
+                            className="w-full rounded-lg shadow-lg mb-6"
+                        />
                         <h1 className="text-5xl font-bold">
                             Welcome
                         </h1>
